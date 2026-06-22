@@ -6,186 +6,79 @@
 <title>What Palo Alto Said — PAM</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Caveat:wght@400;600;700&family=DM+Sans:wght@400;500;700;800&family=DM+Mono:wght@400;500&display=swap');
-
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --bg:#F4F1EA; --ink:#1a1a1a; --green:#3da838; --coral:#c0472a;
-  --amber:#b8820a; --slate:#3a6e9c; --purple:#7a5ea8; --muted:#888880;
-  --faint:#ddd9d0; --paper:#EDE9E0; --note:#F5E135; --note-h:#F0D820;
-  --deep:#0f0f0f;
+  --bg:#F4F1EA;--ink:#1a1a1a;--green:#3da838;--coral:#c0472a;
+  --amber:#b8820a;--slate:#3a6e9c;--purple:#7a5ea8;--muted:#888880;
+  --faint:#ddd9d0;--note:#F5E135;--note-h:#F0D820;--teal:#2a8c7a;
 }
 html{background:var(--bg);}
 body{font-family:'DM Sans',sans-serif;background:var(--bg);overflow-x:hidden;overflow-y:scroll;}
-
-#scroll-driver{position:relative;height:720vh;}
+#scroll-driver{position:relative;height:1000vh;}
 #stage{position:sticky;top:0;width:100vw;height:100vh;overflow:hidden;}
 #canvas{position:absolute;inset:0;}
 
-/* ── STICKY NOTES ── */
 .note{
   position:absolute;background:var(--note);border-radius:1px;
-  padding:6px 9px 7px;font-family:'Caveat',cursive;font-size:14px;font-weight:600;
-  line-height:1.15;color:#1a1a1a;
-  box-shadow:2px 3px 8px rgba(0,0,0,0.16);
+  padding:5px 8px 6px;font-family:'Caveat',cursive;font-size:12px;font-weight:600;
+  line-height:1.15;color:#1a1a1a;box-shadow:2px 3px 8px rgba(0,0,0,0.16);
   will-change:transform,opacity;
-  transition:transform 0.85s cubic-bezier(.4,0,.2,1),
-             opacity 0.5s ease, box-shadow 0.2s ease;
-  cursor:pointer;width:150px;white-space:normal;user-select:none;z-index:10;
+  transition:transform 0.85s cubic-bezier(.4,0,.2,1),opacity 0.5s ease,box-shadow 0.2s ease;
+  cursor:pointer;width:130px;white-space:normal;user-select:none;z-index:10;
   transform-origin:top left;
 }
-.note:hover{
-  background:var(--note-h);box-shadow:4px 6px 16px rgba(0,0,0,0.26);
-  z-index:400!important;
-}
-.note::before{
-  content:none;
-}
+.note:hover{background:var(--note-h);box-shadow:4px 6px 16px rgba(0,0,0,0.26);z-index:400!important;}
+.note::before{content:none;}
 
-/* ── ACT 0: OPENING INTRO PANEL ── */
+/* INTRO */
 #intro-panel{
-  position:absolute;inset:0;z-index:60;
-  display:flex;flex-direction:column;justify-content:center;
-  padding:0 9vw;max-width:1100px;
-  transition:opacity 0.6s ease, transform 0.6s ease;
+  position:absolute;inset:0;z-index:60;display:flex;flex-direction:column;
+  justify-content:center;padding:0 9vw;max-width:1100px;
+  transition:opacity 0.6s ease,transform 0.6s ease;
 }
 #intro-panel.hide{opacity:0;transform:translateY(-40px);pointer-events:none;}
-.ip-kicker{
-  font-family:'DM Mono',monospace;font-size:11px;font-weight:500;
-  letter-spacing:0.22em;text-transform:uppercase;color:var(--green);
-  display:block;margin-bottom:24px;
-}
-.ip-title{
-  font-family:'DM Serif Display',serif;font-weight:400;font-size:40px;
-  color:var(--ink);line-height:1.18;letter-spacing:-0.01em;max-width:920px;
-}
-.ip-sub{
-  font-family:'DM Sans',sans-serif;font-size:16px;font-weight:400;
-  color:var(--muted);line-height:1.6;display:block;margin-top:26px;max-width:580px;
-}
-.ip-scroll{
-  font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.14em;
-  text-transform:uppercase;color:#b0a99c;display:block;margin-top:48px;
-}
+.ip-kicker{font-family:'DM Mono',monospace;font-size:11px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--green);display:block;margin-bottom:24px;}
+.ip-title{font-family:'DM Serif Display',serif;font-weight:400;font-size:clamp(26px,4vw,44px);color:var(--ink);line-height:1.18;letter-spacing:-0.01em;max-width:920px;}
+.ip-sub{font-family:'DM Sans',sans-serif;font-size:16px;font-weight:400;color:var(--muted);line-height:1.6;display:block;margin-top:26px;max-width:580px;}
+.ip-scroll{font-family:'DM Mono',monospace;font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:#b0a99c;display:block;margin-top:48px;}
 
-/* ── BOARD HEADERS (Act 1) ── */
-.board-header{
-  position:absolute;pointer-events:none;transition:opacity 0.45s ease;z-index:15;
-}
+/* BOARD HEADERS */
+.board-header{position:absolute;pointer-events:none;transition:opacity 0.45s ease;z-index:15;}
 .board-header.hide{opacity:0;}
-.bh-label{
-  font-family:'DM Mono',monospace;font-size:9px;font-weight:700;
-  letter-spacing:0.16em;text-transform:uppercase;color:var(--coral);
-  display:block;margin-bottom:5px;
-}
-.bh-q{
-  font-family:'DM Serif Display',serif;font-size:15px;font-style:italic;
-  color:var(--ink);line-height:1.3;display:block;max-width:300px;
-}
-.bh-summary{
-  font-family:'DM Sans',sans-serif;font-size:11.5px;font-weight:400;
-  color:var(--muted);line-height:1.5;display:block;max-width:320px;margin-top:8px;
-}
-.board-divider{
-  position:absolute;background:var(--faint);pointer-events:none;
-  transition:opacity 0.5s ease;z-index:5;
-}
-.board-divider.v{width:1px;top:14%;bottom:5%;}
-.board-divider.h{height:1px;left:3%;right:3%;}
-.board-divider.hide{opacity:0;}
-/* Named quadrant boxes — the post-its live inside a titled container */
-.board-box{
-  position:absolute;border:1.5px solid var(--faint);border-radius:3px;
-  pointer-events:none;transition:opacity 0.5s ease;z-index:3;
-  background:rgba(255,255,255,0.25);
-}
+.bh-label{font-family:'DM Mono',monospace;font-size:8px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--coral);display:block;margin-bottom:4px;}
+.bh-q{font-family:'DM Serif Display',serif;font-size:13px;font-style:italic;color:var(--ink);line-height:1.3;display:block;max-width:280px;}
+.bh-summary{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:400;color:var(--muted);line-height:1.5;display:block;max-width:280px;margin-top:6px;}
+.board-box{position:absolute;border:1px solid var(--faint);border-radius:3px;pointer-events:none;transition:opacity 0.5s ease;z-index:3;background:rgba(255,255,255,0.2);}
 .board-box.hide{opacity:0;}
 
-/* ── CLUSTER HEADERS (Act 2) ── */
-.cluster-head{
-  position:absolute;pointer-events:none;opacity:0;width:13%;
-  transition:opacity 0.5s ease;z-index:20;
-}
-.cluster-head.vis{opacity:1;}
-.ch-verb{
-  font-family:'DM Serif Display',serif;font-size:30px;font-weight:400;
-  display:block;line-height:0.98;letter-spacing:-0.015em;
-}
-.ch-sub{
-  font-family:'DM Mono',monospace;font-size:9px;font-weight:500;
-  letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);
-  margin-top:8px;display:block;line-height:1.5;
-}
-.ch-count{
-  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.1em;
-  color:var(--faint);margin-top:3px;display:block;
-}
-
-/* ── BRIDGE BANNER (Act 2 explainer) ── */
-#bridge{
-  position:absolute;top:5%;left:50%;transform:translateX(-50%);
-  width:min(620px,80vw);text-align:center;z-index:55;pointer-events:none;
-  opacity:0;transition:opacity 0.6s ease;
-}
+/* BRIDGE */
+#bridge{position:absolute;top:4%;left:50%;transform:translateX(-50%);width:min(620px,80vw);text-align:center;z-index:55;pointer-events:none;opacity:0;transition:opacity 0.6s ease;}
 #bridge.vis{opacity:1;}
-#bridge .b-line{
-  font-family:'DM Serif Display',serif;font-size:21px;font-style:italic;
-  color:var(--ink);line-height:1.35;
-}
+#bridge .b-line{font-family:'DM Serif Display',serif;font-size:20px;font-style:italic;color:var(--ink);line-height:1.35;}
 #bridge .b-line strong{font-style:normal;color:var(--coral);font-weight:400;}
 
-/* ── INTEGRATED SPECTRUM PANEL (Act 3) ── */
-#spectrum-panel{
-  position:absolute;inset:0;z-index:25;
-  opacity:0;pointer-events:none;transition:opacity 0.6s ease;
-  display:flex;flex-direction:column;
-}
+/* CLUSTER HEADS */
+.cluster-head{position:absolute;pointer-events:none;opacity:0;width:14%;transition:opacity 0.5s ease;z-index:20;}
+.cluster-head.vis{opacity:1;}
+.ch-verb{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;display:block;line-height:0.98;letter-spacing:-0.015em;}
+.ch-sub{font-family:'DM Mono',monospace;font-size:8px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-top:6px;display:block;line-height:1.5;}
+
+/* SPECTRUM */
+#spectrum-panel{position:absolute;inset:0;z-index:25;opacity:0;pointer-events:none;transition:opacity 0.6s ease;display:flex;flex-direction:column;}
 #spectrum-panel.vis{opacity:1;pointer-events:auto;}
-#spec-intro{
-  text-align:center;padding:84px 40px 18px;flex-shrink:0;
-}
-#spec-intro .si-kicker{
-  font-family:'DM Mono',monospace;font-size:10px;font-weight:500;
-  letter-spacing:0.2em;text-transform:uppercase;color:var(--coral);
-  display:block;margin-bottom:10px;
-}
-#spec-intro .si-line{
-  font-family:'DM Serif Display',serif;font-size:30px;font-weight:400;
-  color:var(--ink);line-height:1.15;letter-spacing:-0.01em;
-}
+#spec-intro{text-align:center;padding:70px 40px 14px;flex-shrink:0;}
+#spec-intro .si-kicker{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--coral);display:block;margin-bottom:8px;}
+#spec-intro .si-line{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;color:var(--ink);line-height:1.15;letter-spacing:-0.01em;}
 #spec-intro .si-line em{font-style:italic;color:var(--green);}
-/* the columns */
-#spec-columns{
-  flex:1;display:grid;grid-template-columns:repeat(5,1fr);
-  gap:0;padding:0 24px 30px;min-height:0;
-}
-.spec-col{
-  position:relative;display:flex;flex-direction:column;align-items:center;
-  border-left:1px dashed var(--faint);padding:0 8px;
-}
+#spec-columns{flex:1;display:grid;grid-template-columns:repeat(6,1fr);gap:0;padding:0 16px 24px;min-height:0;}
+.spec-col{position:relative;display:flex;flex-direction:column;align-items:center;border-left:1px dashed var(--faint);padding:0 6px;}
 .spec-col:first-child{border-left:none;}
-.spec-col-head{
-  text-align:center;padding-top:8px;flex-shrink:0;
-  display:flex;flex-direction:column;align-items:center;gap:7px;
-}
-.spec-pip{width:13px;height:13px;border-radius:50%;transition:all 0.4s;}
-.spec-verb{
-  font-family:'DM Serif Display',serif;font-size:25px;font-style:italic;
-  white-space:nowrap;line-height:1;
-}
-.spec-stance{
-  font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;
-  color:var(--ink);line-height:1.3;text-align:center;max-width:160px;
-  padding:0 4px;
-}
-.spec-density{
-  font-family:'DM Mono',monospace;font-size:9px;font-weight:700;
-  letter-spacing:0.13em;text-transform:uppercase;
-}
-.spec-context{
-  font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.05em;
-  text-transform:uppercase;color:var(--muted);text-align:center;line-height:1.5;
-}
-/* density coloring */
+.spec-col-head{text-align:center;padding-top:6px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:5px;}
+.spec-pip{width:11px;height:11px;border-radius:50%;transition:all 0.4s;}
+.spec-verb{font-family:'DM Serif Display',serif;font-size:21px;font-style:italic;white-space:nowrap;line-height:1;}
+.spec-stance{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;color:var(--ink);line-height:1.3;text-align:center;max-width:130px;padding:0 3px;}
+.spec-density{font-family:'DM Mono',monospace;font-size:8px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;}
+.spec-context{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.05em;text-transform:uppercase;color:var(--muted);text-align:center;line-height:1.5;}
 .spec-col.dense .spec-pip{background:#c8c3b8;border:2px solid #a8a398;}
 .spec-col.dense .spec-verb{color:#8a857a;}
 .spec-col.dense .spec-density{color:#a8a398;}
@@ -195,626 +88,581 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);overflow-x:hidden;ove
 .spec-col.open .spec-pip{background:var(--green);border:2px solid var(--green);box-shadow:0 0 0 5px rgba(61,168,56,0.16);}
 .spec-col.open .spec-verb{color:var(--green);}
 .spec-col.open .spec-density{color:var(--green);}
-/* the note drop zone within each column */
-.spec-notes{
-  position:relative;flex:1;width:100%;margin-top:14px;
-  border-top:1px solid var(--faint);padding-top:10px;
-}
+.spec-col.new-open .spec-pip{background:var(--teal);border:2px solid var(--teal);box-shadow:0 0 0 5px rgba(42,140,122,0.16);}
+.spec-col.new-open .spec-verb{color:var(--teal);}
+.spec-col.new-open .spec-density{color:var(--teal);}
+.spec-notes{position:relative;flex:1;width:100%;margin-top:10px;border-top:1px solid var(--faint);padding-top:8px;}
 
-/* ── ACT 4 EVIDENCE — ORBITAL MODEL (light) ── */
-#evidence-layer{
-  position:absolute;inset:0;background:var(--bg);
-  opacity:0;pointer-events:none;transition:opacity 0.8s ease;z-index:50;
-}
+/* EVIDENCE */
+#evidence-layer{position:absolute;inset:0;background:var(--bg);opacity:0;pointer-events:none;transition:opacity 0.8s ease;z-index:50;}
 #evidence-layer.vis{opacity:1;pointer-events:auto;}
-#ev-top{
-  position:absolute;top:0;left:0;right:0;padding:22px 36px 14px;
-  text-align:center;z-index:54;pointer-events:none;
-}
-#ev-top .eh-kicker{
-  font-family:'DM Mono',monospace;font-size:9px;font-weight:500;
-  letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);
-  display:block;margin-bottom:8px;
-}
-#ev-top h2{
-  font-family:'DM Serif Display',serif;font-size:24px;font-style:italic;
-  color:var(--ink);font-weight:400;line-height:1.15;max-width:820px;margin:0 auto;
-}
-#ev-top .eh-hint{
-  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.13em;
-  text-transform:uppercase;color:var(--muted);margin-top:10px;
-}
+#ev-top{position:absolute;top:0;left:0;right:0;padding:18px 36px 12px;text-align:center;z-index:54;pointer-events:none;}
+#ev-top .eh-kicker{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;}
+#ev-top h2{font-family:'DM Serif Display',serif;font-size:22px;font-style:italic;color:var(--ink);font-weight:400;line-height:1.15;max-width:820px;margin:0 auto;}
+#ev-top .eh-hint{font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.13em;text-transform:uppercase;color:var(--muted);margin-top:8px;}
 #orbit-canvas{position:absolute;inset:0;z-index:51;}
-/* corner evidence fields */
-.ev-field{
-  position:absolute;max-width:280px;z-index:52;pointer-events:none;
-  display:flex;flex-direction:column;gap:6px;
-}
-.evf-tag{
-  font-family:'DM Mono',monospace;font-size:8.5px;font-weight:700;
-  letter-spacing:0.13em;text-transform:uppercase;
-}
-.evf-title{
-  font-family:'DM Serif Display',serif;font-size:17px;font-style:italic;
-  color:var(--ink);line-height:1.25;
-}
-.evf-body{
-  font-family:'DM Sans',sans-serif;font-size:11.5px;
-  color:var(--muted);line-height:1.55;
-}
-#orbit-center{
-  position:absolute;left:50%;top:54%;transform:translate(-50%,-50%);
-  z-index:52;pointer-events:none;text-align:center;
-  display:flex;flex-direction:column;gap:8px;
-}
-.oc-line{
-  font-family:'DM Mono',monospace;font-size:9px;letter-spacing:0.08em;
-  text-transform:uppercase;color:var(--muted);
-  display:flex;align-items:center;gap:8px;justify-content:center;
-}
-.oc-dot{width:9px;height:9px;border-radius:50%;display:inline-block;}
-.oc-dot.up{background:#3da838;}
-.oc-dot.down{background:#c0472a;}
+.ev-field{position:absolute;max-width:260px;z-index:52;pointer-events:none;display:flex;flex-direction:column;gap:5px;}
+.evf-tag{font-family:'DM Mono',monospace;font-size:8px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;}
+.evf-title{font-family:'DM Serif Display',serif;font-size:15px;font-style:italic;color:var(--ink);line-height:1.25;}
+.evf-body{font-family:'DM Sans',sans-serif;font-size:10.5px;color:var(--muted);line-height:1.55;}
 
-/* Story panel (light) */
-#story-panel{
-  position:absolute;inset:0;z-index:60;
-  background:rgba(244,241,234,0.97);
-  opacity:0;pointer-events:none;transition:opacity 0.35s ease;
-  display:flex;flex-direction:column;justify-content:center;
-  padding:6vh 9vw;
-}
+/* ACT 5 */
+#act5{position:absolute;inset:0;z-index:65;background:var(--ink);opacity:0;pointer-events:none;transition:opacity 0.9s ease;display:flex;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 10vw;}
+#act5.vis{opacity:1;pointer-events:auto;}
+.a5-kicker{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--green);display:block;margin-bottom:28px;}
+.a5-line{font-family:'DM Serif Display',serif;font-weight:400;font-size:clamp(24px,3.5vw,48px);color:#fff;line-height:1.18;letter-spacing:-0.015em;max-width:820px;display:block;margin-bottom:16px;}
+.a5-line em{font-style:italic;color:var(--green);}
+.a5-sub{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:400;color:rgba(255,255,255,0.5);line-height:1.65;max-width:520px;display:block;margin-top:14px;}
+.a5-sig{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.2);display:block;margin-top:56px;}
+
+/* STORY PANEL */
+#story-panel{position:absolute;inset:0;z-index:70;background:rgba(244,241,234,0.97);opacity:0;pointer-events:none;transition:opacity 0.35s ease;display:flex;flex-direction:column;justify-content:center;padding:5vh 8vw;}
 #story-panel.vis{opacity:1;pointer-events:auto;}
-#story-close{
-  position:absolute;top:26px;right:30px;background:none;border:none;
-  color:var(--muted);font-size:36px;cursor:pointer;line-height:1;
-  font-family:'DM Sans',sans-serif;transition:color 0.2s;
-}
+#story-close{position:absolute;top:22px;right:26px;background:none;border:none;color:var(--muted);font-size:32px;cursor:pointer;line-height:1;transition:color 0.2s;}
 #story-close:hover{color:var(--ink);}
-#story-verb{
-  font-family:'DM Serif Display',serif;font-size:46px;font-style:italic;
-  display:block;margin-bottom:18px;line-height:1;
-}
-#story-statement{
-  font-family:'DM Serif Display',serif;font-size:24px;color:var(--ink);
-  font-weight:400;line-height:1.45;display:block;max-width:900px;
-  margin-bottom:42px;
-}
+#story-verb{font-family:'DM Serif Display',serif;font-size:42px;font-style:italic;display:block;margin-bottom:14px;line-height:1;}
+#story-statement{font-family:'DM Serif Display',serif;font-size:22px;color:var(--ink);font-weight:400;line-height:1.45;display:block;max-width:900px;margin-bottom:36px;}
 #story-statement b{font-style:italic;}
-#story-cols{display:grid;grid-template-columns:1fr 1fr;gap:64px;max-width:1040px;}
-.sc-head{
-  font-family:'DM Mono',monospace;font-size:10px;font-weight:700;
-  letter-spacing:0.13em;text-transform:uppercase;display:block;margin-bottom:16px;
-}
-.story-col ul{list-style:none;display:flex;flex-direction:column;gap:15px;}
-.story-col li{
-  font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.6;
-  color:#3a382f;padding-left:18px;position:relative;
-}
-.story-col li::before{
-  content:'';position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:50%;
-}
+#story-cols{display:grid;grid-template-columns:1fr 1fr;gap:56px;max-width:1040px;}
+.sc-head{font-family:'DM Mono',monospace;font-size:9px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;display:block;margin-bottom:14px;}
+.story-col ul{list-style:none;display:flex;flex-direction:column;gap:13px;}
+.story-col li{font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.6;color:#3a382f;padding-left:16px;position:relative;}
+.story-col li::before{content:'';position:absolute;left:0;top:8px;width:6px;height:6px;border-radius:50%;}
 #story-strong li::before{background:#3da838;}
 #story-weak li::before{background:#c0472a;}
-.story-col li .src{
-  font-family:'DM Mono',monospace;font-size:8.5px;letter-spacing:0.1em;
-  text-transform:uppercase;color:var(--muted);display:block;margin-top:5px;
-}
+.story-col li .src{font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-top:4px;}
 
-/* ── FIXED UI ── */
+/* FIXED UI */
 #title-block{position:fixed;top:20px;left:24px;z-index:100;pointer-events:none;transition:opacity 0.4s ease;}
 #title-block.hide{opacity:0;}
-#title-block h1{
-  font-family:'DM Serif Display',serif;font-size:19px;font-weight:400;
-  color:var(--ink);line-height:1.2;
-}
+#title-block h1{font-family:'DM Serif Display',serif;font-size:17px;font-weight:400;color:var(--ink);line-height:1.2;}
 #title-block h1 em{font-style:italic;color:var(--green);}
-#title-block p{
-  font-family:'DM Mono',monospace;font-size:8px;color:var(--muted);
-  letter-spacing:0.1em;text-transform:uppercase;margin-top:4px;
-}
-#act-label{
-  position:fixed;top:22px;right:24px;font-family:'DM Mono',monospace;
-  font-size:8.5px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;
-  color:var(--muted);z-index:100;pointer-events:none;text-align:right;
-  transition:color 0.4s;
-}
-#progress{
-  position:fixed;bottom:22px;left:50%;transform:translateX(-50%);
-  display:flex;gap:9px;z-index:100;pointer-events:none;
-}
+#title-block p{font-family:'DM Mono',monospace;font-size:7.5px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;margin-top:3px;}
+#act-label{position:fixed;top:22px;right:24px;font-family:'DM Mono',monospace;font-size:8px;font-weight:500;letter-spacing:0.14em;text-transform:uppercase;color:var(--muted);z-index:100;pointer-events:none;text-align:right;transition:color 0.4s;}
+#progress{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;gap:9px;z-index:100;pointer-events:none;}
 .prog-dot{width:7px;height:7px;border-radius:50%;background:var(--faint);transition:all 0.3s;}
 .prog-dot.act{background:var(--ink);transform:scale(1.5);}
 #progress.on-dark .prog-dot{background:rgba(255,255,255,0.2);}
 #progress.on-dark .prog-dot.act{background:rgba(255,255,255,0.75);}
-#hint{
-  position:fixed;bottom:46px;left:50%;transform:translateX(-50%);
-  font-family:'DM Mono',monospace;font-size:9px;font-weight:500;color:#b0a99c;
-  letter-spacing:0.12em;z-index:100;pointer-events:none;white-space:nowrap;
-  transition:opacity 0.5s;text-transform:uppercase;
-}
-#pam-sig{
-  position:fixed;bottom:22px;right:24px;font-family:'DM Sans',sans-serif;
-  font-size:8px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;
-  color:var(--faint);z-index:100;transition:color 0.4s;
-}
+#hint{position:fixed;bottom:46px;left:50%;transform:translateX(-50%);font-family:'DM Mono',monospace;font-size:9px;font-weight:500;color:#b0a99c;letter-spacing:0.12em;z-index:100;pointer-events:none;white-space:nowrap;transition:opacity 0.5s;text-transform:uppercase;}
+#pam-sig{position:fixed;bottom:22px;right:24px;font-family:'DM Sans',sans-serif;font-size:8px;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:var(--faint);z-index:100;transition:color 0.4s;}
 #pam-sig span{color:var(--green);}
-#note-count{
-  position:fixed;bottom:22px;left:24px;font-family:'DM Mono',monospace;
-  font-size:8.5px;color:var(--faint);z-index:100;letter-spacing:0.1em;
-  transition:color 0.4s;
-}
-
-/* ── TOOLTIP ── */
+#note-count{position:fixed;bottom:22px;left:24px;font-family:'DM Mono',monospace;font-size:8px;color:var(--faint);z-index:100;letter-spacing:0.1em;transition:color 0.4s;}
 #tooltip{position:fixed;z-index:500;pointer-events:none;max-width:280px;opacity:0;transition:opacity 0.15s ease;}
 #tooltip.vis{opacity:1;}
-.tt-inner{background:var(--ink);color:#f0ece4;border-radius:3px;padding:12px 14px;}
-.tt-name{font-size:12px;font-weight:700;margin-bottom:4px;color:#fff;}
-.tt-what{font-size:10px;color:#a0a89a;margin-bottom:6px;font-style:italic;line-height:1.4;}
+.tt-inner{background:var(--ink);color:#f0ece4;border-radius:3px;padding:11px 13px;}
+.tt-name{font-size:12px;font-weight:700;margin-bottom:3px;color:#fff;}
+.tt-what{font-size:10px;color:#a0a89a;margin-bottom:5px;font-style:italic;line-height:1.4;}
 .tt-why{font-size:10px;line-height:1.6;color:#c8c4bc;}
-.tt-cluster{margin-top:8px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.12em;text-transform:uppercase;padding:3px 7px;border-radius:2px;display:inline-block;}
-
-@media(prefers-reduced-motion:reduce){
-  .note,.board-header,.board-divider,.cluster-head,#bridge,#spectrum-panel,#evidence-layer,.act-intro{transition:none!important;}
-}
+.tt-cluster{margin-top:7px;font-family:'DM Mono',monospace;font-size:8px;letter-spacing:0.12em;text-transform:uppercase;padding:3px 7px;border-radius:2px;display:inline-block;}
+@media(prefers-reduced-motion:reduce){.note,#bridge,#spectrum-panel,#evidence-layer,#act5{transition:none!important;}}
 </style>
 </head>
 <body>
-
 <div id="scroll-driver">
   <div id="stage">
     <div id="canvas">
-
-      <!-- Act 0: opening intro panel (full screen, fades out before boards) -->
       <div id="intro-panel">
         <span class="ip-kicker">Palo Alto Museum · community board analysis</span>
-        <h1 class="ip-title">At two community events, the museum put up four boards and asked four questions. Around 200 people answered on sticky notes.</h1>
+        <h1 class="ip-title">At two community events, the museum put up six boards and asked six questions. Around 270 people answered on sticky notes.</h1>
         <p class="ip-sub">This walks through what people wrote, sorts it into the desires underneath, and asks what each desire would mean if the museum built itself around it.</p>
         <span class="ip-scroll">scroll to begin ↓</span>
       </div>
 
-      <!-- Four named quadrant boxes -->
-      <div class="board-box" id="box0" style="left:2%;top:23%;width:46%;height:26%;"></div>
-      <div class="board-box" id="box1" style="left:52%;top:23%;width:46%;height:26%;"></div>
-      <div class="board-box" id="box2" style="left:2%;top:68%;width:46%;height:24%;"></div>
-      <div class="board-box" id="box3" style="left:52%;top:68%;width:46%;height:24%;"></div>
+      <!-- Six board boxes in a 3×2 grid -->
+      <div class="board-box" id="box0" style="left:1%;top:18%;width:30%;height:23%;"></div>
+      <div class="board-box" id="box1" style="left:35%;top:18%;width:30%;height:23%;"></div>
+      <div class="board-box" id="box2" style="left:69%;top:18%;width:30%;height:23%;"></div>
+      <div class="board-box" id="box3" style="left:1%;top:56%;width:30%;height:26%;"></div>
+      <div class="board-box" id="box4" style="left:35%;top:56%;width:30%;height:26%;"></div>
+      <div class="board-box" id="box5" style="left:69%;top:56%;width:30%;height:26%;"></div>
 
-      <!-- Board headers -->
-      <div class="board-header" id="bh0" style="left:3%;top:6.5%;">
+      <!-- Board headers — one per quadrant -->
+      <div class="board-header" id="bh0" style="left:1.5%;top:6%;">
         <span class="bh-label">Board 1 · Common Ground</span>
         <span class="bh-q">Suggest speakers and performers you'd like to see here.</span>
-        <span class="bh-summary">Mostly famous names: tech founders, politicians, a few local musicians. People reached for prestige. But a handful asked for something smaller, like a coffee shop, or a place to actually gather.</span>
+        <span class="bh-summary">People reached for prestige: politicians, tech founders, local musicians. But a handful asked for something smaller — a coffee shop, a place to actually gather.</span>
       </div>
-      <div class="board-header" id="bh1" style="left:53%;top:6.5%;">
-        <span class="bh-label">Board 2 · Imagine a World Without Palo Alto</span>
-        <span class="bh-q">What theme would you like in a future exhibition?</span>
-        <span class="bh-summary">The sharpest board. Alongside the tech milestones, people demanded the buried history: eugenics at Stanford, redlining, the Chinese railroad workers, the Ohlone, "anything at all on Black Palo Alto."</span>
+      <div class="board-header" id="bh1" style="left:35.5%;top:6%;">
+        <span class="bh-label">Board 2 · Museum in Your Pocket</span>
+        <span class="bh-q">Add an interesting story about Palo Alto for this mobile museum.</span>
+        <span class="bh-summary">Place-based memory. Orchards, the duck pond, lost schools, Juana Briones. People wanted the city's physical past held — not just its inventions.</span>
       </div>
-      <div class="board-header" id="bh2" style="left:3%;top:54%;">
-        <span class="bh-label">Board 3 · Museum in Your Pocket</span>
-        <span class="bh-q">Add a story about Palo Alto for this mobile museum.</span>
-        <span class="bh-summary">Place-based memory. The orchards, the duck pond, lost schools, Juana Briones. People wanted the city's physical past held onto, not just its inventions.</span>
-      </div>
-      <div class="board-header" id="bh3" style="left:53%;top:54%;">
-        <span class="bh-label">Board 4 · From Hooves to Hollywood</span>
+      <div class="board-header" id="bh2" style="left:69.5%;top:6%;">
+        <span class="bh-label">Board 3 · From Hooves to Hollywood</span>
         <span class="bh-q">Name a creative figure connected with Palo Alto.</span>
-        <span class="bh-summary">The question asked for movie people. People named the whole creative economy: Pixar, IDEO, writers, the Grateful Dead. The sharpest answer is the oldest. Eadweard Muybridge shot the first motion photographs on a Palo Alto farm in 1878.</span>
+        <span class="bh-summary">People named the whole creative economy: Pixar, IDEO, writers, the Grateful Dead. The sharpest answer is the oldest — Muybridge shot the first motion photographs on a Palo Alto farm in 1878.</span>
+      </div>
+      <div class="board-header" id="bh3" style="left:1.5%;top:43%;">
+        <span class="bh-label">Board 4 · The Life of Trees</span>
+        <span class="bh-q">Add your ideas for interactive nature experiences for this exhibition.</span>
+        <span class="bh-summary">The only board that looks forward, not backward. Tree walks, Baylands, native plants, climate questions. Also: the loudest demand in the entire dataset — a new plaque for the Historic Dawn Redwood. In all caps.</span>
+      </div>
+      <div class="board-header" id="bh4" style="left:35.5%;top:43%;">
+        <span class="bh-label">Board 5 · Imagine a World Without Palo Alto</span>
+        <span class="bh-q">What theme would you like to see in a future artifact exhibition?</span>
+        <span class="bh-summary">The sharpest board. Alongside tech milestones: eugenics at Stanford, redlining, Chinese railroad workers, the Ohlone, "Anything at all on Black Palo Alto." And Theranos — the device that never worked — named as an artifact alongside the HP oscillator.</span>
+      </div>
+      <div class="board-header" id="bh5" style="left:69.5%;top:43%;">
+        <span class="bh-label">Board 6 · I Am Palo Alto</span>
+        <span class="bh-q">Add the name of a Palo Altan whose story you'd like in this exhibition.</span>
+        <span class="bh-summary">The most specific board. Real names: Russell Lee MD, Birge Clark, Chanel Miller, Fran from Fran's Newsstand, the original nurses of the clinic. And at the bottom: "Let's Not ERASE History But Embrace it — so we can learn."</span>
       </div>
 
-      <!-- Bridge banner (Act 2) -->
+      <!-- Bridge banner -->
       <div id="bridge">
-        <span class="b-line">We asked <strong>four questions.</strong> Palo Alto answered with <strong>six desires.</strong> Sort the same notes by what they ask the museum to <em>do</em>, and the boards fall into six verbs.</span>
+        <span class="b-line">We asked <strong>six questions.</strong> Palo Alto answered with <strong>seven desires.</strong> Sort the same notes by what they ask the museum to <em>do</em>, and the boards fall into seven verbs.</span>
       </div>
 
-      <!-- Cluster headers (Act 2) — sit in the left margin of each row band -->
-      <div class="cluster-head" id="ch-celebrate" style="left:2.5%;top:22%;">
-        <span class="ch-verb" style="color:#3da838;">Celebrate</span>
-        <span class="ch-sub">honor what<br>was built here</span>
-      </div>
-      <div class="cluster-head" id="ch-excavate" style="left:50.5%;top:22%;">
-        <span class="ch-verb" style="color:#c0472a;">Excavate</span>
-        <span class="ch-sub">surface what was<br>buried or erased</span>
-      </div>
-      <div class="cluster-head" id="ch-belong" style="left:2.5%;top:53%;">
-        <span class="ch-verb" style="color:#b8820a;">Belong</span>
-        <span class="ch-sub">claim a place<br>in the story</span>
-      </div>
-      <div class="cluster-head" id="ch-witness" style="left:50.5%;top:53%;">
-        <span class="ch-verb" style="color:#3a6e9c;">Witness</span>
-        <span class="ch-sub">see the whole<br>picture</span>
-      </div>
-      <div class="cluster-head" id="ch-convene" style="left:2.5%;top:81%;">
-        <span class="ch-verb" style="color:#7a5ea8;">Convene</span>
-        <span class="ch-sub">gather around<br>what matters now</span>
-      </div>
-      <div class="cluster-head" id="ch-wish" style="left:50.5%;top:81%;">
-        <span class="ch-verb" style="color:#888880;">Wish</span>
-        <span class="ch-sub">imagine what<br>could exist</span>
-      </div>
+      <!-- Cluster headers — seven clusters in a shifted grid -->
+      <div class="cluster-head" id="ch-celebrate" style="left:1%;top:18%;"><span class="ch-verb" style="color:#3da838;">Celebrate</span><span class="ch-sub">honor what<br>was built here</span></div>
+      <div class="cluster-head" id="ch-excavate" style="left:50%;top:18%;"><span class="ch-verb" style="color:#c0472a;">Excavate</span><span class="ch-sub">surface what was<br>buried or erased</span></div>
+      <div class="cluster-head" id="ch-belong" style="left:1%;top:46%;"><span class="ch-verb" style="color:#b8820a;">Belong</span><span class="ch-sub">claim a place<br>in the story</span></div>
+      <div class="cluster-head" id="ch-witness" style="left:50%;top:46%;"><span class="ch-verb" style="color:#3a6e9c;">Witness</span><span class="ch-sub">see the whole<br>picture</span></div>
+      <div class="cluster-head" id="ch-convene" style="left:1%;top:73%;"><span class="ch-verb" style="color:#7a5ea8;">Convene</span><span class="ch-sub">gather around<br>what matters now</span></div>
+      <div class="cluster-head" id="ch-inhabit" style="left:50%;top:73%;"><span class="ch-verb" style="color:#2a8c7a;">Inhabit</span><span class="ch-sub">know this city<br>as a living place</span></div>
+      <div class="cluster-head" id="ch-wish" style="left:1%;top:90%;"><span class="ch-verb" style="color:#888880;">Wish</span><span class="ch-sub">imagine what<br>could exist</span></div>
 
-      <!-- Integrated spectrum panel (Act 3) -->
+      <!-- Spectrum panel — six columns (Wish dropped, Inhabit added) -->
       <div id="spectrum-panel">
         <div id="spec-intro">
           <span class="si-kicker">The positioning range</span>
-          <span class="si-line">Each cluster is also a stance the museum could take.<br><em>Two stances are already crowded. One is contested. Two are wide open.</em></span>
+          <span class="si-line">Each cluster is also a stance the museum could take.<br><em>Two are crowded. One is contested. Three are wide open.</em></span>
         </div>
         <div id="spec-columns">
           <div class="spec-col dense" data-cl="celebrate">
-            <div class="spec-col-head">
-              <div class="spec-pip"></div>
-              <div class="spec-verb">Celebrate</div>
-              <div class="spec-stance">Honor what Palo Alto built</div>
-              <div class="spec-density">Crowded</div>
-              <div class="spec-context">Other tech museums<br>already do this</div>
-            </div>
+            <div class="spec-col-head"><div class="spec-pip"></div><div class="spec-verb">Celebrate</div><div class="spec-stance">Honor what Palo Alto built</div><div class="spec-density">Crowded</div><div class="spec-context">Tech museums<br>already do this</div></div>
             <div class="spec-notes" id="sn-celebrate"></div>
           </div>
           <div class="spec-col dense" data-cl="belong">
-            <div class="spec-col-head">
-              <div class="spec-pip"></div>
-              <div class="spec-verb">Belong</div>
-              <div class="spec-stance">Keep the city's shared memory</div>
-              <div class="spec-density">Crowded</div>
-              <div class="spec-context">Local archives<br>already do this</div>
-            </div>
+            <div class="spec-col-head"><div class="spec-pip"></div><div class="spec-verb">Belong</div><div class="spec-stance">Keep the city's shared memory</div><div class="spec-density">Crowded</div><div class="spec-context">Local archives<br>already do this</div></div>
             <div class="spec-notes" id="sn-belong"></div>
           </div>
           <div class="spec-col contested" data-cl="convene">
-            <div class="spec-col-head">
-              <div class="spec-pip"></div>
-              <div class="spec-verb">Convene</div>
-              <div class="spec-stance">Host the town's live conversation</div>
-              <div class="spec-density">Contested</div>
-              <div class="spec-context">Could slip into<br>a rental venue</div>
-            </div>
+            <div class="spec-col-head"><div class="spec-pip"></div><div class="spec-verb">Convene</div><div class="spec-stance">Host the town's live conversation</div><div class="spec-density">Contested</div><div class="spec-context">Could slip into<br>a rental venue</div></div>
             <div class="spec-notes" id="sn-convene"></div>
           </div>
           <div class="spec-col open" data-cl="excavate">
-            <div class="spec-col-head">
-              <div class="spec-pip"></div>
-              <div class="spec-verb">Excavate</div>
-              <div class="spec-stance">Bring the buried history into the open</div>
-              <div class="spec-density">Wide open</div>
-              <div class="spec-context">The biggest cluster,<br>and no one holds it</div>
-            </div>
+            <div class="spec-col-head"><div class="spec-pip"></div><div class="spec-verb">Excavate</div><div class="spec-stance">Bring the buried history into the open</div><div class="spec-density">Wide open</div><div class="spec-context">Biggest cluster.<br>No one holds it.</div></div>
             <div class="spec-notes" id="sn-excavate"></div>
           </div>
           <div class="spec-col open" data-cl="witness">
-            <div class="spec-col-head">
-              <div class="spec-pip"></div>
-              <div class="spec-verb">Witness</div>
-              <div class="spec-stance">Show the unedited picture</div>
-              <div class="spec-density">Wide open</div>
-              <div class="spec-context">Goes hand in hand<br>with Excavate</div>
-            </div>
+            <div class="spec-col-head"><div class="spec-pip"></div><div class="spec-verb">Witness</div><div class="spec-stance">Show the unedited picture</div><div class="spec-density">Wide open</div><div class="spec-context">Goes hand in hand<br>with Excavate</div></div>
             <div class="spec-notes" id="sn-witness"></div>
+          </div>
+          <div class="spec-col new-open" data-cl="inhabit">
+            <div class="spec-col-head"><div class="spec-pip"></div><div class="spec-verb">Inhabit</div><div class="spec-stance">Know this city as a living ecosystem</div><div class="spec-density">Wide open</div><div class="spec-context">New signal from<br>the Trees board</div></div>
+            <div class="spec-notes" id="sn-inhabit"></div>
           </div>
         </div>
       </div>
 
-      <!-- Evidence layer (Act 4) — orbital model -->
+      <!-- Evidence layer -->
       <div id="evidence-layer">
         <div id="ev-top">
-          <span class="eh-kicker">Act 4 · The five stances, tested against the research</span>
-          <h2>Each stance is sized by how much the research supports it, on balance. The bigger the circle, the stronger the case. Hover a stance to see which findings pull for it and which pull against. Click for the full case.</h2>
-          <p class="eh-hint">Size is the net of supports minus strains · green pulls for · red pulls against</p>
+          <span class="eh-kicker">Act 4 · The six stances, tested against the research</span>
+          <h2>Each stance is sized by how much the research supports it. Hover to see which findings pull for it or against it. Click for the full case.</h2>
+          <p class="eh-hint">Size = net supports minus strains · green pulls for · red pulls against</p>
         </div>
         <canvas id="orbit-canvas"></canvas>
-        <!-- four corner evidence fields -->
-        <div class="ev-field" id="field0" style="left:2.5%;top:19%;">
-          <span class="evf-tag" style="color:#c0472a;">Finding 1 · The public record, 2011 to 2023</span>
+        <div class="ev-field" id="field0" style="left:2%;top:18%;">
+          <span class="evf-tag" style="color:#c0472a;">Finding 1 · The public record, 2011 to 2025</span>
           <span class="evf-title">The argument is already a decade old</span>
-          <span class="evf-body">In a single comment thread, residents asked for exhibits on Stanford's eugenics history and redlining, and for Joan Baez and the Grateful Dead. The same people want both the hard history and the celebration. They are not separate camps.</span>
+          <span class="evf-body">In comment threads and on six community boards, residents have asked for the same things: the buried history alongside the celebration. They are not separate camps. They are the same people.</span>
         </div>
-        <div class="ev-field" id="field1" style="right:2.5%;top:19%;text-align:right;">
+        <div class="ev-field" id="field1" style="right:2%;top:18%;text-align:right;">
           <span class="evf-tag" style="color:#c0472a;">Finding 2 · The museum building</span>
           <span class="evf-title">The buried history is already on site</span>
-          <span class="evf-body">Juana Briones owned this land. A wall from her 1844 adobe house now stands at the museum's entrance. No other museum in the area can put a physical object like this at its front door.</span>
+          <span class="evf-body">Juana Briones owned this land. A wall from her 1844 adobe house stands at the museum's entrance. The original nurses of the clinic worked in this building. No other museum in the area opens with objects like these at its front door.</span>
         </div>
-        <div class="ev-field" id="field2" style="left:2.5%;bottom:7%;">
+        <div class="ev-field" id="field2" style="left:2%;bottom:6%;">
           <span class="evf-tag" style="color:#3a6e9c;">Finding 3 · A study of 18 museums</span>
           <span class="evf-title">A half-hearted stance reaches no one</span>
-          <span class="evf-body">The Computer History Museum has called itself a place "for everyone" for twenty years, and visitors still describe it as a museum for tech people. The Oakland Museum committed fully to its point of view and changed who walks in the door. Picking a clear stance is what works.</span>
+          <span class="evf-body">The Computer History Museum has called itself a place "for everyone" for twenty years, and visitors still describe it as a museum for tech people. The Oakland Museum committed fully to its point of view and changed who walks in the door.</span>
         </div>
-        <div class="ev-field" id="field3" style="right:2.5%;bottom:7%;text-align:right;">
-          <span class="evf-tag" style="color:#7a5ea8;">Finding 4 · The board and honorary chairs</span>
-          <span class="evf-title">The bold ideas are on the letterhead, not in the room</span>
-          <span class="evf-body">The honorary chairs are people known for reckoning with history and for public deliberation. The working board, the people who will actually run the museum, lean toward heritage and celebration. The cautious instinct is the one with the votes.</span>
+        <div class="ev-field" id="field3" style="right:2%;bottom:6%;text-align:right;">
+          <span class="evf-tag" style="color:#7a5ea8;">Finding 4 · What the successful turnarounds did</span>
+          <span class="evf-title">Commitment changed who came through the door</span>
+          <span class="evf-body">In every documented case where a civic museum broke out of its inherited audience, it made a clear choice about what it would be and refused to hedge. The ones that tried to serve every camp at once stayed invisible to all of them.</span>
         </div>
-        <!-- center legend -->
-        <!-- legend now lives in the header hint line -->
         <div id="orbit-center" style="display:none;"></div>
       </div>
 
-      <!-- Position story panel (opens on click) -->
+      <!-- Act 5: close -->
+      <div id="act5">
+        <span class="a5-kicker">Palo Alto Museum · what the boards say</span>
+        <span class="a5-line">The research points<br><em>somewhere.</em></span>
+        <span class="a5-line" style="font-size:clamp(15px,1.9vw,26px);color:rgba(255,255,255,0.62);margin-top:0;">Whether PAM goes there is a conversation worth having<br>before the doors open.</span>
+        <span class="a5-sub">This is a working document, not a conclusion. It is built from six community boards, a decade of public comment, the Roth Building's own history, and a study of eighteen comparable institutions. The positioning is still to be made — with the community, with donors, with the board, and with the town.</span>
+        <span class="a5-sig">Prepared by Milo Chao · 100% Human LLC · Palo Alto Museum brand strategy engagement</span>
+      </div>
+
+      <!-- Story panel -->
       <div id="story-panel">
         <button id="story-close" aria-label="Close">×</button>
         <span id="story-verb"></span>
         <span id="story-statement"></span>
         <div id="story-cols">
-          <div class="story-col">
-            <span class="sc-head" style="color:#3da838;">Where the evidence strengthens it</span>
-            <ul id="story-strong"></ul>
-          </div>
-          <div class="story-col">
-            <span class="sc-head" style="color:#c0472a;">Where the evidence weakens it</span>
-            <ul id="story-weak"></ul>
-          </div>
+          <div class="story-col"><span class="sc-head" style="color:#3da838;">Where the evidence strengthens it</span><ul id="story-strong"></ul></div>
+          <div class="story-col"><span class="sc-head" style="color:#c0472a;">Where the evidence weakens it</span><ul id="story-weak"></ul></div>
         </div>
       </div>
-
-    </div><!-- /canvas -->
-  </div><!-- /stage -->
-</div><!-- /scroll-driver -->
-
-<!-- Tooltip -->
-<div id="tooltip"><div class="tt-inner">
-  <div class="tt-name" id="tt-name"></div>
-  <div class="tt-what" id="tt-what"></div>
-  <div class="tt-why" id="tt-why"></div>
-  <span class="tt-cluster" id="tt-cluster"></span>
-</div></div>
-
-<!-- Fixed UI -->
-<div id="title-block">
-  <h1>What Palo Alto said<br><em>and what it could mean</em></h1>
-  <p>Palo Alto Museum · community board analysis</p>
+    </div>
+  </div>
 </div>
-<div id="act-label">Act 1 of 4 — The boards as found</div>
+
+<div id="tooltip"><div class="tt-inner"><div class="tt-name" id="tt-name"></div><div class="tt-what" id="tt-what"></div><div class="tt-why" id="tt-why"></div><span class="tt-cluster" id="tt-cluster"></span></div></div>
+<div id="title-block"><h1>What Palo Alto said<br><em>and what it could mean</em></h1><p>Palo Alto Museum · six boards · 270 voices</p></div>
+<div id="act-label">Act 1 of 5 — The boards as found</div>
 <div id="hint">hover any note to read it · scroll to continue ↓</div>
 <div id="progress">
   <div class="prog-dot act" id="pd0"></div>
   <div class="prog-dot" id="pd1"></div>
   <div class="prog-dot" id="pd2"></div>
   <div class="prog-dot" id="pd3"></div>
+  <div class="prog-dot" id="pd4"></div>
 </div>
 <div id="pam-sig"><span>Palo Alto</span> Museum</div>
 <div id="note-count"></div>
 
 <script>
-// ─── DATA ─────────────────────────────────────────────────────────────────────
-const NOTES = [
-{t:"Gavin Newsom",b:0,cl:"convene",info:{what:"Governor of California, former San Francisco mayor",why:"His presence would signal PAM as a civic institution capable of convening real power, not just honoring the past."}},
-{t:"Kamala Harris",b:0,cl:"convene",info:{what:"49th Vice President of the United States",why:"Her candidacy reframed what Californian leadership looks like. A PAM appearance would ground her story in the Bay Area community that shaped her."}},
-{t:"Condoleezza Rice",b:0,cl:"convene",info:{what:"66th US Secretary of State, now at Hoover Institution Stanford",why:"Stanford's Hoover Institution is embedded in Palo Alto's intellectual geography. Rice represents that layer."}},
-{t:"Adam Schiff",b:0,cl:"convene",info:{what:"US Senator for California",why:"His role in national politics makes him a civic figure rooted in California life."}},
-{t:"Anna Eshoo!",b:0,cl:"convene",info:{what:"Former US Congresswoman, represented Palo Alto for over 30 years",why:"One of the longest-serving representatives of Silicon Valley, bridging tech policy and civic accountability."}},
-{t:"Joe Simitian ♡",b:0,cl:"belong",info:{what:"Santa Clara County Supervisor, former Mayor of Palo Alto. A hand-drawn heart was placed next to his name — the only such mark on the board.",why:"The heart is the most charged mark in the dataset. It signals personal affection for a local politician, rarer than any national name."}},
-{t:"Mary Hughes",b:0,cl:"convene",info:{what:"Palo Alto civic leader",why:"Appears in two entries, including one pairing her with Simitian and Justin Timberlake — a sign of local affection for civic figures."}},
-{t:"Clayborne Carson on MLK",b:0,cl:"excavate",info:{what:"Historian, founding director of the MLK Research Institute at Stanford",why:"Carson is the definitive scholar of King's papers. His presence signals the community wants its proximity to civil rights scholarship to be more than adjacent."}},
-{t:"Zoe Lofgren Yes!",b:0,cl:"convene",info:{what:"US Congresswoman, House Judiciary Committee",why:"The Yes! amplifies this into an endorsement. Civic accountability is the desire."}},
-{t:"Sundar Pichai",b:0,cl:"celebrate",info:{what:"CEO of Alphabet and Google",why:"Google's garage origin story is the myth at the center of Palo Alto's self-image."}},
-{t:"Vinod Khosla",b:0,cl:"celebrate",info:{what:"Venture capitalist, co-founder of Sun Microsystems",why:"One of the architects of the Valley's risk capital model."}},
-{t:"Jerry Yang / Yahoo",b:0,cl:"celebrate",info:{what:"Co-founder of Yahoo, Stanford PhD dropout",why:"Yahoo was founded in a Stanford trailer in 1994, central to the garage-to-giant arc."}},
-{t:"Bill Gates, Tim Cook, Elon Musk",b:0,cl:"celebrate",info:{what:"Tech CEO triple-bill",why:"A wish for a summit that will never happen. The community imagines PAM as a stage for world-historic power."}},
+// ── FULL DATASET ──
+const NOTES=[
+{t:"Gavin Newsom",b:0,cl:"convene",info:{what:"Governor of California",why:"His presence would signal PAM as capable of convening real civic power."}},
+{t:"Kamala Harris",b:0,cl:"convene",info:{what:"49th Vice President of the United States",why:"Her candidacy reframed Californian leadership. A PAM appearance would ground her story here."}},
+{t:"Condoleezza Rice",b:0,cl:"convene",info:{what:"66th US Secretary of State, Hoover Institution",why:"Stanford's Hoover Institution is embedded in Palo Alto's intellectual geography."}},
+{t:"Adam Schiff",b:0,cl:"convene",info:{what:"US Senator for California",why:"A civic figure rooted in California political life."}},
+{t:"Anna Eshoo!",b:0,cl:"convene",info:{what:"Former US Congresswoman, represented Palo Alto 30+ years",why:"One of the longest-serving representatives of Silicon Valley."}},
+{t:"Joe Simitian \u2661",b:0,cl:"belong",info:{what:"County Supervisor, former Mayor. Heart drawn next to name \u2014 the only such mark on any board.",why:"The heart is the most charged mark in the entire dataset. Personal affection for a local politician."}},
+{t:"Clayborne Carson on MLK",b:0,cl:"excavate",info:{what:"Historian, founding director of the MLK Research Institute at Stanford",why:"Carson is the definitive scholar of King\u2019s papers. The community wants this proximity to civil rights scholarship made real."}},
+{t:"Zoe Lofgren Yes!",b:0,cl:"convene",info:{what:"US Congresswoman, House Judiciary Committee",why:"The Yes! amplifies this into an endorsement."}},
+{t:"Gordon Chang",b:0,cl:"excavate",info:{what:"Historian, author of Ghosts of Gold Mountain",why:"His work on Chinese railroad laborers links to one of the boards\u2019 most urgent demands."}},
+{t:"David Kennedy",b:0,cl:"witness",info:{what:"Pulitzer Prize-winning historian, Stanford",why:"A scholar known for examining the full, unflinching American story."}},
+{t:"Sundar Pichai",b:0,cl:"celebrate",info:{what:"CEO of Alphabet and Google",why:"Google\u2019s garage origin story is the myth at the center of Palo Alto\u2019s self-image."}},
+{t:"Vinod Khosla",b:0,cl:"celebrate",info:{what:"Venture capitalist, co-founder of Sun Microsystems",why:"One of the architects of the Valley\u2019s risk capital model."}},
+{t:"Sam Altman",b:0,cl:"celebrate",info:{what:"CEO of OpenAI",why:"The most consequential figure in contemporary AI, from the same Peninsula geography."}},
+{t:"Reed Hastings",b:0,cl:"celebrate",info:{what:"Co-founder of Netflix",why:"Netflix reshaped global entertainment from a Peninsula suburb."}},
 {t:"Anne Wojcicki",b:0,cl:"celebrate",info:{what:"Co-founder and CEO of 23andMe",why:"23andMe was a landmark in consumer biotech founded in Palo Alto."}},
 {t:"Esther Wojcicki",b:0,cl:"celebrate",info:{what:"Legendary journalism teacher at Palo Alto High School",why:"An argument that the most important people in Silicon Valley are not always founders."}},
-{t:"Sam Altman",b:0,cl:"celebrate",info:{what:"CEO of OpenAI",why:"The most consequential figure in contemporary AI, from the same Peninsula geography that produced the internet generation."}},
-{t:"Reed Hastings",b:0,cl:"celebrate",info:{what:"Co-founder of Netflix",why:"Netflix reshaped global entertainment from a Peninsula suburb."}},
-{t:"Ken Burns",b:0,cl:"witness",info:{what:"Documentary filmmaker — The Civil War, Jazz, Baseball",why:"Represents the desire for PAM to tell Palo Alto's story with the depth of national history."}},
-{t:"Michael Pollan",b:0,cl:"witness",info:{what:"Author of The Omnivore's Dilemma",why:"His work on food and consciousness connects to the orchard past and the counterculture."}},
-{t:"Joan Baez",b:0,cl:"belong",info:{what:"Folk singer and civil rights activist, grew up in Palo Alto, attended Paly",why:"The clearest figure who claims Palo Alto before the tech era. Appears on all four boards."}},
-{t:"Gordon Chang",b:0,cl:"excavate",info:{what:"Historian, author of Ghosts of Gold Mountain",why:"His work on Chinese railroad laborers links to one of the board's most urgent demands."}},
-{t:"Author of The Anxious Generation",b:0,cl:"witness",info:{what:"Jonathan Haidt, author of The Anxious Generation (2024)",why:"Palo Alto has had a publicized youth mental health crisis. Haidt's work lands with local weight."}},
-{t:"Ang Lee",b:0,cl:"celebrate",info:{what:"Oscar-winning director of Life of Pi",why:"Lee spent formative years in the Bay Area, with deep ties to Asian-American artistic identity."}},
-{t:"Neil Young",b:0,cl:"belong",info:{what:"Rock musician, longtime Bay Area resident",why:"His analog-era career connects to the community's non-tech self-image."}},
-{t:"Taylor Swift & Shakira (by mia)",b:0,cl:"wish",info:{what:"Global pop superstars — signed by a child, mia",why:"The only place a child's voice is clearly audible in the dataset."}},
-{t:"John Lennon",b:0,cl:"wish",info:{what:"Beatle, peace activist — deceased 1980",why:"An impossible wish. Someone wanted the museum's imagination to be bigger than the living."}},
-{t:"Justin Timberlake",b:0,cl:"wish",info:{what:"Pop musician and actor",why:"On the same note as Simitian and Mary Hughes — captures the range of desires in the room."}},
-{t:"Molly Tuttle — Excellent!",b:0,cl:"belong",info:{what:"Bluegrass musician, Grammy winner, from Palo Alto",why:"Locally rooted. The Excellent! annotation signals genuine local knowledge."}},
-{t:"Paly Madrigals",b:0,cl:"belong",info:{what:"Palo Alto High School's elite a cappella choir",why:"Suggesting a high school choir beside national politicians is a statement about what the museum should value."}},
-{t:"iSing Girls Choir",b:0,cl:"belong",info:{what:"Palo Alto-based professional girls choir",why:"A community arts organization with a national reputation built from a local base."}},
-{t:"Andrew Luck",b:0,cl:"celebrate",info:{what:"NFL quarterback, Stanford graduate",why:"Bridges the athletic, intellectual, and local. A different kind of Bay Area legend."}},
-{t:"Pope Leo XIV",b:0,cl:"wish",info:{what:"First American pope, elected May 2025",why:"A real-time entry, weeks before the board was created. Someone was bringing the world into the room."}},
-{t:"James Franco [crossed out]",b:0,cl:"witness",info:{what:"Actor, grew up in Palo Alto — name written and then crossed out, the only editorial deletion in the dataset",why:"The most significant punctuation mark in the dataset. It encodes the community's collective editorial act."}},
-{t:"Jackie Spier",b:0,cl:"convene",info:{what:"Former US Congresswoman, Jonestown survivor",why:"Her survival and decades of civic service give her unusual moral weight."}},
-{t:"Dick Gould",b:0,cl:"celebrate",info:{what:"Stanford men's tennis coach, 17 NCAA titles",why:"One of the most successful coaching careers in American sports, rooted entirely in Palo Alto."}},
-{t:"Coffee Shop",b:0,cl:"convene",info:{what:"A community suggestion — a place, not a person",why:"The least glamorous entry and possibly the most honest. We want somewhere to sit and talk."}},
-// Board 1
-{t:"HP 12-C Calculator",b:1,cl:"celebrate",info:{what:"HP's legendary financial calculator, 1981, still in production",why:"One of the longest-lived products in tech history, connecting HP's engineering culture to everyday work."}},
-{t:"Hewlett Packard hardware",b:1,cl:"celebrate",info:{what:"HP's product lineage — oscillators, calculators, printers",why:"The garage at 367 Addison is Landmark 976. HP's hardware is the physical evidence of the founding myth."}},
-{t:"Palm Pilot (1990s)",b:1,cl:"celebrate",info:{what:"PDA developed by Palm Computing in Palo Alto, 1996",why:"Palm invented the modern handheld form factor, underremembered in the iPhone era."}},
-{t:"Startup Swag History",b:1,cl:"celebrate",info:{what:"T-shirts, stickers, artifacts from defunct startups",why:"The folk art of Silicon Valley — ephemeral, abundant, eloquent about cultures that no longer exist."}},
-{t:"Syntex",b:1,cl:"celebrate",info:{what:"Developed the first oral contraceptive, moved to Palo Alto 1963",why:"One of the most consequential medical innovations of the 20th century, developed here. Almost nobody knows."}},
-{t:"Varian",b:1,cl:"celebrate",info:{what:"Founded 1948 — one of the first Silicon Valley companies",why:"Predates HP as a Peninsula tech anchor. Underrecognized origin story."}},
-{t:"Fairchild Semiconductor",b:1,cl:"celebrate",info:{what:"1957 — the traitorous eight create the semiconductor template",why:"The true origin point. Without it, no Intel, no Apple, no Google."}},
-{t:"Theranos and the saga",b:1,cl:"witness",info:{what:"Blood-testing startup, $9B, exposed as fraudulent in 2015",why:"The single entry that holds both the innovation myth and its refutation at once."}},
-{t:"Theranos artifacts: lab tubes",b:1,cl:"witness",info:{what:"The Edison device, magazine covers, the black turtleneck",why:"The device that never worked is a more honest representation of hype culture than any garage exhibit."}},
-{t:"Apple IIE",b:1,cl:"celebrate",info:{what:"Apple's most successful early PC, 1983",why:"The machine that put computing in American schools."}},
-{t:"Space — Lockheed Missiles & Space",b:1,cl:"celebrate",info:{what:"Lockheed's space and defense division",why:"The Peninsula's aerospace history is nearly absent from the tech narrative. Satellites were built here before the internet."}},
-{t:"IDEO, Lunar Design, Palo Alto Design",b:1,cl:"celebrate",info:{what:"Industrial design firms that shaped Valley products",why:"IDEO invented the first commercial mouse and the human-centered design methodology."}},
-{t:"Acid Test",b:1,cl:"excavate",info:{what:"Ken Kesey's psychedelic events, 1965-66, with the Grateful Dead and LSD",why:"The counterculture's defining ritual, in Palo Alto's backyard."}},
-{t:"NO coffee house for Jerry Garcia!",b:1,cl:"excavate",info:{what:"A lament — no Palo Alto venue for Garcia",why:"A critique disguised as a fact: this city had the counterculture next door and did not make space for it."}},
-{t:"Midpeninsula Free University 1968",b:1,cl:"excavate",info:{what:"Alternative school founded 1966, influencing the open-source ethos",why:"Offered free courses on anything. A direct ancestor of the information-should-be-free ideology."}},
-{t:"The Wave — Ron Jones, Cubberley",b:1,cl:"witness",info:{what:"1967 social experiment at Cubberley High School",why:"Jones created a fascist movement in his classroom to show how it happens. One of the most powerful pedagogical experiments ever."}},
-{t:"The Further Bus",b:1,cl:"excavate",info:{what:"Ken Kesey's psychedelic bus, driven by Neal Cassady",why:"An iconic counterculture object. Its Bay Area origin runs parallel to and critical of the tech story."}},
-{t:"Protests — Stanford anti-war groups",b:1,cl:"excavate",info:{what:"Activism against Stanford's Vietnam-era weapons research",why:"The university's role in military research is a chapter Palo Alto has not fully reckoned with."}},
-{t:"Grateful Dead",b:1,cl:"belong",info:{what:"Rock band formed in Palo Alto in 1965 as the Warlocks",why:"Palo Alto's most significant cultural export that the city does not fully claim."}},
-{t:"Chinese Railroad Workers",b:1,cl:"excavate",info:{what:"10,000–20,000 Chinese laborers who built the western transcontinental railroad",why:"The railroad that made Stanford's fortune was built by workers who got no credit and were later excluded by law."}},
-{t:"Japanese Farmers on Homer & High",b:1,cl:"excavate",info:{what:"Japanese-American farming families before WWII internment",why:"Removed to camps, land not returned. The street names make this precise and personal."}},
-{t:"Where did the 'help' live?",b:1,cl:"excavate",info:{what:"A direct question about the domestic workers who staffed affluent households",why:"One of the sharpest entries. It demands a social history of the people who made comfortable lives possible."}},
-{t:"Anything at all on Black PA.",b:1,cl:"excavate",info:{what:"A direct statement of absence",why:"Not a suggestion, a critique. It may be the most important entry: it names what is missing, not present."}},
-{t:"Eugenics — Early Stanford",b:1,cl:"excavate",info:{what:"David Starr Jordan, first Stanford president, was a prominent eugenicist",why:"Documented but rarely surfaced in public self-presentation."}},
-{t:"Red lining & Tinsley bussing",b:1,cl:"excavate",info:{what:"Racial covenants; the Tinsley program bussing East Palo Alto students in",why:"Palo Alto's racial geography was deliberate. Tinsley was a partial remedy, contested and reduced."}},
-{t:"Muwekma land acknowledgement",b:1,cl:"excavate",info:{what:"Recognition of the Muwekma Ohlone as original inhabitants",why:"A federally unrecognized tribe actively seeking re-recognition."}},
-{t:"Contact Muwekma Ohlone tribe",b:1,cl:"excavate",info:{what:"An action item — contact the tribe and SJSU Anthropology",why:"Goes further than acknowledgement. Asks the museum to build a real relationship with the people whose land it occupies."}},
-{t:"Palo Alto was part of Mexico",b:1,cl:"excavate",info:{what:"California was Mexican territory until 1848",why:"The street grid sits on land that was Mexico within living memory of the city's founders."}},
-{t:"Demographics of PA in 1900",b:1,cl:"witness",info:{what:"A call to document who actually lived here at the turn of the century",why:"The real demographics would likely surprise residents who imagine the city as always suburban and white."}},
-{t:"Eichler Architecture",b:1,cl:"belong",info:{what:"Mid-century modern tract homes built across Palo Alto",why:"Eichler was one of the only developers who sold to Black families during restrictive covenants. An architectural and civil rights story."}},
-{t:"Ming's Pressed Duck",b:1,cl:"belong",info:{what:"Ming's Restaurant, a Chinese-American institution for decades",why:"The Chinese-American culinary history that ran alongside, and often served, the tech industry."}},
-{t:"Edy's Candy & Ice Cream",b:1,cl:"belong",info:{what:"A beloved Palo Alto ice cream shop",why:"Appears on multiple boards — a shared memory crossing generations and income brackets."}},
-{t:"Lost Schools",b:1,cl:"belong",info:{what:"Crescent Park, Briones, Ross Road — closed elementary schools",why:"School closures map onto neighborhood demographic change."}},
-{t:"Bergman's Dept Store",b:1,cl:"belong",info:{what:"Downtown department store, a University Avenue anchor",why:"The loss of downtown retail to tech offices is a lived experience for longtime residents."}},
-{t:"Loma Prieta 1989 Earthquake",b:1,cl:"witness",info:{what:"7.1 magnitude earthquake that killed 63",why:"A shared trauma point. The region's geology is as consequential as its culture."}},
-{t:"World Cup '94",b:1,cl:"celebrate",info:{what:"1994 FIFA World Cup, hosted partly at Stanford Stadium",why:"Stanford hosted six games including the final. The world's most watched event, uncommemorated."}},
-{t:"Palo Alto Parks, Open Spaces",b:1,cl:"belong",info:{what:"The city's network of parks and preserved open space",why:"Unusually extensive public open space. A story about civic values."}},
-// Board 2
-{t:"Google garage and founding",b:2,cl:"celebrate",info:{what:"The Menlo Park garage where Brin and Page worked",why:"The physical anchor of Silicon Valley's foundational story."}},
-{t:"HP Garage",b:2,cl:"celebrate",info:{what:"367 Addison Avenue — California Historical Landmark 976",why:"The origin myth, and a real place in a real neighborhood."}},
-{t:"De Forest",b:2,cl:"celebrate",info:{what:"Lee de Forest, inventor of the triode vacuum tube, Palo Alto 1910s",why:"A direct precursor to the transistor. The electronics chain runs through Palo Alto."}},
-{t:"El Palo Alto tree / Portola",b:2,cl:"belong",info:{what:"The ancient coastal redwood, a landmark for Portola in 1769",why:"The city is named after this tree. It is still alive."}},
-{t:"1950s Apricot orchards",b:2,cl:"belong",info:{what:"The orchards that covered the valley before development",why:"A complete erasure — ecological, agricultural, cultural."}},
-{t:"The Duck Pond",b:2,cl:"belong",info:{what:"The duck pond in Mitchell Park",why:"One of the few genuinely democratic public spaces in the city."}},
-{t:"Segregation / Southgate vs Eichler",b:2,cl:"excavate",info:{what:"Southgate had racial covenants; Eichler developments explicitly did not",why:"Two neighborhoods a few miles apart. Their histories are the city's racial politics written in deeds."}},
-{t:"Zion Church / Black Community",b:2,cl:"excavate",info:{what:"The AME Zion Church and the Black community in the Ventura neighborhood",why:"The primary area where Black families could live under redlining. Zion Church was the anchor."}},
-{t:"Angela Davis",b:2,cl:"excavate",info:{what:"Scholar, activist, acquitted 1972, longtime Bay Area presence",why:"Signals the desire to include radical political thought in Palo Alto's story."}},
-{t:"Ohlone Roots",b:2,cl:"excavate",info:{what:"The Muwekma Ohlone presence and philosophy",why:"They managed this land for thousands of years. The oldest relevant form of environmental thinking in the region."}},
-{t:"Palo Alto during WWII",b:2,cl:"witness",info:{what:"Stanford's military research, Japanese-American internment",why:"WWII reshaped the Peninsula's demographics and politics more than any event before the tech boom."}},
-{t:"Don't Forget South Palo Alto!",b:2,cl:"excavate",info:{what:"A call to include the historically less affluent, more diverse south",why:"The exclamation encodes urgency. South Palo Alto is often absent from the city's self-image."}},
-{t:"Magic Bridge",b:2,cl:"belong",info:{what:"Palo Alto's fully accessible playground, built 2015",why:"Local civic advocacy producing a nationally recognized model."}},
-{t:"Juana Briones",b:2,cl:"excavate",info:{what:"1802-1889. Californio ranchera, healer, merchant. Purchased the land that became Palo Alto in 1844. Illiterate, but won her land claim at the US Supreme Court.",why:"She owned the land. Her adobe wall is the museum's first exhibit, at 300 Homer Ave."}},
-{t:"Town of Mayfield",b:2,cl:"belong",info:{what:"An independent town annexed by Palo Alto in 1925",why:"Its absorption erased a working-class immigrant community. Carved saloon tables survive as artifacts."}},
-{t:"Stanford Theatre",b:2,cl:"celebrate",info:{what:"1925 movie palace, restored by the Packard Foundation",why:"One of the few places where tech philanthropy directly preserved community culture."}},
-{t:"The Wave @ Cubberley",b:2,cl:"witness",info:{what:"Ron Jones's 1967 classroom experiment",why:"One of the most widely taught experiments in social psychology, in a Palo Alto high school."}},
-{t:"Harold + Maude movie",b:2,cl:"celebrate",info:{what:"1971 cult film by Hal Ashby, filmed at Homer and Waverley",why:"One of the great American dark comedies, with a specific Palo Alto location."}},
-{t:"Peninsula Creamery",b:2,cl:"belong",info:{what:"Diner and ice cream parlor on Emerson, since 1933",why:"Survived the tech transformation of downtown. Represents continuity."}},
-{t:"Birge Clark Architect",b:2,cl:"celebrate",info:{what:"Palo Alto's defining architect — designed the PAM building",why:"His Spanish Colonial Revival style defined downtown. He designed the museum's home."}},
-{t:"Grateful Dead History",b:2,cl:"belong",info:{what:"The Dead formed in Palo Alto in 1965",why:"The city's most consequential cultural export from the pre-tech era."}},
-{t:"PLEASE MAKE NEW PLAQUE — Dawn Redwood",b:2,cl:"convene",info:{what:"An action request for the Dawn Redwood at Paly — in all caps, the loudest note in the dataset",why:"The only direct institutional demand. The caps suggest real frustration. Someone has waited a long time."}},
-{t:"1906 Earthquake",b:2,cl:"witness",info:{what:"The 7.9 quake that destroyed San Francisco",why:"It accelerated Peninsula development as refugees moved south."}},
-{t:"Rapp's Shoes / Swain's Music",b:2,cl:"belong",info:{what:"Longtime University Avenue retail",why:"The independent retail ecology that tech office conversion displaced."}},
-{t:"Barron Park Railroad",b:2,cl:"belong",info:{what:"The narrow-gauge railroad through Barron Park",why:"Pre-car infrastructure shaped the neighborhoods. The routes became bike paths."}},
-{t:"Dance Culture — Friday Night Waltz",b:2,cl:"belong",info:{what:"A long-running community ballroom event at Stanford",why:"A community tradition alongside but independent of the university's academic culture."}},
-// Board 3
-{t:"Pacific Data Images",b:3,cl:"celebrate",info:{what:"PDI, 1980, pioneer in CGI animation, later merged with DreamWorks",why:"Created some of the first CGI characters. Palo Alto's animation history begins here."}},
-{t:"Alvy Ray Smith (Pixar)",b:3,cl:"celebrate",info:{what:"Co-founder of Pixar, inventor of the alpha channel",why:"His invention is foundational to every digital image with transparency."}},
-{t:"Ollie Johnston — Disney, born in PA",b:3,cl:"celebrate",info:{what:"One of Disney's Nine Old Men, born in Palo Alto, lived in Juana Briones' house",why:"That he lived in Briones' historic house connects the city's pre-tech and creative histories."}},
-{t:"Greg Brown (Muralist, Univ Ave)",b:3,cl:"celebrate",info:{what:"Muralist behind public art on University Avenue",why:"Among the most visible public art in downtown Palo Alto."}},
-{t:"David Kelley & Dennis Boyle (IDEO)",b:3,cl:"celebrate",info:{what:"IDEO co-founders — Kelley founded the Stanford d.school",why:"IDEO's design methodology has been as influential as any tech product from the Valley."}},
-{t:"HP Audio Oscillator — Disney Fantasia",b:3,cl:"celebrate",info:{what:"HP's first product was bought by Disney for Fantasia (1940)",why:"The first product HP sold went into one of cinema's most ambitious films. The origin of the Valley's relationship with Hollywood."}},
-{t:"Steve Jobs",b:3,cl:"celebrate",info:{what:"Co-founder of Apple, lived in Palo Alto most of his life",why:"He lived on Waverley Street. Personal as well as legendary."}},
-{t:"Joan Baez",b:3,cl:"belong",info:{what:"Folk musician, grew up in Palo Alto, attended Paly",why:"The only figure on all four boards. Her Palo Alto roots are genuine and deep."}},
-{t:"TERI HATCHER !!!",b:3,cl:"wish",info:{what:"Actress — from Sunnyvale",why:"Three exclamation marks make this the most emphatic single entry in the dataset. The intensity is the data."}},
-{t:"Firoozeh Dumas X2!!",b:3,cl:"belong",info:{what:"Author of Funny in Farsi, grew up in the Bay Area",why:"A defining text of the Bay Area immigrant experience."}},
-{t:"Jeremy Lin (Paly)",b:3,cl:"celebrate",info:{what:"NBA player, Paly Class of 2006 — Linsanity 2012",why:"One of the great underdog narratives with a direct Palo Alto address."}},
-{t:"The Donnas",b:3,cl:"belong",info:{what:"All-female rock band formed at Paly in 1993",why:"Formed in a Palo Alto high school. An origin story worth telling."}},
-{t:"Chanel Miller",b:3,cl:"excavate",info:{what:"Author of Know My Name, sexual assault survivor — born and raised in Palo Alto",why:"Grew up here, assaulted at Stanford, reclaimed her identity through writing. The most important living author with a direct Palo Alto biography."}},
-{t:"Eadweard Muybridge",b:3,cl:"celebrate",info:{what:"Conducted horse motion studies at Stanford's stock farm in 1878, inventing the precursor to cinema",why:"The first motion picture sequences in history. The Valley's visual technology lineage begins in a Palo Alto field."}},
-{t:"Jon M Chu — Wicked",b:3,cl:"celebrate",info:{what:"Director of Crazy Rich Asians and Wicked, grew up in Los Altos",why:"A direct example of the Asian-American creative talent the Peninsula produced."}},
-{t:"Sigourney Weaver",b:3,cl:"wish",info:{what:"Actress — Stanford graduate",why:"One of few major Hollywood stars with an academic connection to Palo Alto."}},
-{t:"Kenneth Patchen (Beat poet)",b:3,cl:"excavate",info:{what:"Poet, lived in Palo Alto 1956 until his death — a Beat precursor",why:"He lived here while Ginsberg was at Berkeley. Connects the city to a Beat literary world nobody associates it with."}},
-{t:"Tuck & Patti & Windham Hill Records",b:3,cl:"belong",info:{what:"Jazz duo; Windham Hill Records, founded in Palo Alto 1976",why:"Windham Hill invented New Age music, founded in a Palo Alto garage — a creative garage story parallel to HP and Google."}},
-{t:"Bob Waksberg",b:3,cl:"celebrate",info:{what:"Creator of BoJack Horseman, grew up in Palo Alto",why:"One of the best TV dramas of the 2010s, from the city that produced Silicon Valley itself."}},
-{t:"Harold and Maude (Homer & Waverley)",b:3,cl:"celebrate",info:{what:"1971 Hal Ashby film, shot at a specific Palo Alto intersection",why:"A great American film about the absurdity of conformity, filmed here."}},
-{t:"Double Indemnity (filmed yup!)",b:3,cl:"celebrate",info:{what:"1944 Billy Wilder noir — the (filmed yup!) is part of the note",why:"The parenthetical signals genuine local pride. A canonical Hollywood film shot in Palo Alto, almost unknown."}},
-{t:"UNAFF — UN Association Film Fest",b:3,cl:"convene",info:{what:"UN Association Film Festival, in Palo Alto since 1998",why:"Brings international human rights documentary to Palo Alto. Signals a desire to connect local culture to global justice."}},
-{t:"Fremont Older / Cora Older",b:3,cl:"excavate",info:{what:"Muckraking journalist and his writer wife, lived near Palo Alto",why:"Their salons brought together the Bay Area's intellectual and reformist community in the early 20th century."}},
+{t:"Tech Founders: WOZ, Zuckerberg, Page, Musk",b:0,cl:"celebrate",info:{what:"Four founders named on one note",why:"A wish for a summit that will never happen. PAM imagined as a stage for world-historic power."}},
+{t:"Bill / Tim / Adam DRAPER together",b:0,cl:"celebrate",info:{what:"Three generations of the Draper VC family",why:"The Draper dynasty is one of Silicon Valley\u2019s defining venture lineages."}},
+{t:"Pitch Johnson \u2014 was here tonight!",b:0,cl:"celebrate",info:{what:"Pioneer venture capitalist \u2014 note says he was present at the event",why:"A living piece of the history, in the room."}},
+{t:"Steve Young",b:0,cl:"celebrate",info:{what:"NFL Hall of Fame quarterback, Stanford graduate",why:"Bridges the athletic, intellectual, and local."}},
+{t:"Andrew Luck",b:0,cl:"celebrate",info:{what:"NFL quarterback, Stanford graduate",why:"His early retirement made him a different kind of Bay Area legend."}},
+{t:"Dick Gould",b:0,cl:"celebrate",info:{what:"Stanford men\u2019s tennis coach, 17 NCAA titles",why:"One of the most successful coaching careers in American sports, rooted entirely in Palo Alto."}},
+{t:"Tara VanDerveer",b:0,cl:"celebrate",info:{what:"Stanford women\u2019s basketball coach \u2014 note adds \u2018Likely our next president!\u2019",why:"The editorial aside signals genuine local pride alongside genuine humor."}},
+{t:"KEN BURNS",b:0,cl:"witness",info:{what:"Documentary filmmaker \u2014 The Civil War, Jazz, Baseball",why:"Represents the desire for PAM to tell Palo Alto\u2019s story with the depth of national history."}},
+{t:"Joan Baez",b:0,cl:"belong",info:{what:"Folk singer and civil rights activist, grew up in Palo Alto",why:"The clearest figure who claims Palo Alto before the tech era. Appears across all six boards."}},
+{t:"Neil Young",b:0,cl:"belong",info:{what:"Rock musician, longtime Bay Area resident",why:"His analog-era career connects to the community\u2019s non-tech self-image."}},
+{t:"Molly Tuttle",b:0,cl:"belong",info:{what:"Bluegrass musician, Grammy winner, from Palo Alto",why:"Locally rooted. The Excellent! annotation signals genuine local knowledge."}},
+{t:"Paly Madrigals",b:0,cl:"belong",info:{what:"Palo Alto High School\u2019s elite a cappella choir",why:"Suggesting a high school choir beside national politicians is a statement about what the museum should value."}},
+{t:"iSing Girls choir",b:0,cl:"belong",info:{what:"Palo Alto-based professional girls choir",why:"Community arts organization with national reputation built locally."}},
+{t:"GUNN CHORUS",b:0,cl:"belong",info:{what:"Henry M. Gunn High School choral program",why:"The homegrown alongside the famous."}},
+{t:"Aurora Singers",b:0,cl:"belong",info:{what:"Bay Area choral ensemble",why:"Represents the richness of the local arts ecology."}},
+{t:"The Saint Michael Trio",b:0,cl:"belong",info:{what:"Local chamber music ensemble",why:"Community arts that deserve a place alongside innovation history."}},
+{t:"Tuck & Patti",b:0,cl:"belong",info:{what:"Bay Area jazz duo, linked to Windham Hill Records",why:"The creative musical economy that ran alongside tech."}},
+{t:"PACO",b:0,cl:"belong",info:{what:"Palo Alto Community Orchestra",why:"A community arts organization asking to be seen."}},
+{t:"Ang Lee",b:0,cl:"celebrate",info:{what:"Oscar-winning director, Bay Area roots",why:"Deep ties to Asian-American artistic identity."}},
+{t:"Pope Leo XIV",b:0,cl:"wish",info:{what:"First American pope, elected May 2025",why:"A real-time entry weeks before the board was created. Someone bringing the world into the room."}},
+{t:"Taylor Swift & Shakira (by mia)",b:0,cl:"wish",info:{what:"Global pop superstars \u2014 signed by a child",why:"The only place a child\u2019s voice is clearly audible in the dataset."}},
+{t:"JOHN LENNON",b:0,cl:"wish",info:{what:"Beatle, peace activist \u2014 deceased 1980",why:"An impossible wish. Someone wanted the museum\u2019s imagination bigger than the living."}},
+{t:"Justin Timberlake",b:0,cl:"wish",info:{what:"Pop musician and actor",why:"On the same note as Simitian and Mary Hughes \u2014 the range of desires in one sticky note."}},
+{t:"James Franco",b:0,cl:"witness",info:{what:"Actor, grew up in Palo Alto \u2014 crossed out on one board",why:"Multiple appearances including one crossed-out instance. The community\u2019s collective editorial act."}},
+{t:"Jackie Speier",b:0,cl:"convene",info:{what:"Former US Congresswoman, Jonestown survivor",why:"Her survival and decades of civic service give her unusual moral weight."}},
+{t:"Ron Wyden (Senator from Palo Alto)",b:0,cl:"convene",info:{what:"US Senator from Oregon \u2014 claimed as a local figure",why:"The local claim on a national figure shows the appetite for civic voice."}},
+{t:"Coffee Shop",b:0,cl:"convene",info:{what:"A community suggestion \u2014 a place, not a person",why:"The least glamorous entry and possibly the most honest. We want somewhere to sit and talk."}},
+{t:"Best ideas from Left & Right \u2014 respectful debate",b:0,cl:"convene",info:{what:"A note calling for balanced civic discussion",why:"A direct call for PAM to be a convening space, not a celebratory one."}},
+{t:"Adam Davies \u2014 Save local journalism!",b:0,cl:"convene",info:{what:"Entrepreneur and media figure \u2014 includes a civic call to action",why:"The editorial flourish makes this more than a speaker suggestion."}},
+{t:"Non-Profit leaders & change-makers",b:0,cl:"convene",info:{what:"A category request",why:"The desire for PAM to platform civic work, not only celebrity."}},
+{t:"PAUSD Students",b:0,cl:"belong",info:{what:"Palo Alto Unified School District students as a constituency",why:"An argument that the students who live here belong on stage."}},
+{t:"Jon Kinyon \u2014 PA History collector",b:0,cl:"excavate",info:{what:"Palo Alto Historical Association member, archivist, old PA family",why:"One of the few people actively archiving pre-tech Palo Alto."}},
+{t:"Gloria Hom \u2014 grandfather's background",b:0,cl:"excavate",info:{what:"A note requesting a specific family history be told",why:"'About her grandfather's background' \u2014 personal, specific, named."}},
+{t:"UNA Film Festival",b:0,cl:"convene",info:{what:"UN Association Film Festival, held in Palo Alto since 1998",why:"Signals desire to connect local culture to global justice."}},
+{t:"Stanford Professor speaker series",b:0,cl:"convene",info:{what:"A format request for ongoing academic programming",why:"The desire for PAM to be a recurring intellectual destination."}},
+{t:"Becky Morgan",b:0,cl:"convene",info:{what:"Former California State Senator, Santa Clara County",why:"Longtime civic figure in the Valley."}},
+{t:"Karen Holman",b:0,cl:"convene",info:{what:"Former Palo Alto Mayor, city council member",why:"Local civic leadership named directly."}},
+{t:"Pat Burt",b:0,cl:"convene",info:{what:"Former Palo Alto Mayor",why:"Another former mayor \u2014 the civic convening desire lands on known local figures."}},
+// Board 1: Museum in Your Pocket
+{t:"El Palo Alto tree",b:1,cl:"belong",info:{what:"The ancient coastal redwood that gives the city its name",why:"The city is named after this tree. It is still alive."}},
+{t:"1950s Apricot orchards and farms",b:1,cl:"belong",info:{what:"The orchards that covered the valley before development",why:"A complete erasure \u2014 ecological, agricultural, cultural."}},
+{t:"Flower growers in PA",b:1,cl:"belong",info:{what:"Commercial flower farming through the mid-20th century",why:"Another agricultural economy erased by development."}},
+{t:"Palo Alto culture = soil",b:1,cl:"belong",info:{what:"A poetic equation connecting the city to its agricultural past",why:"Before the garages there were orchards."}},
+{t:"Town of Mayfield",b:1,cl:"belong",info:{what:"Independent town annexed by Palo Alto in 1925",why:"Its absorption erased a working-class immigrant community."}},
+{t:"The Duck Pond",b:1,cl:"belong",info:{what:"The duck pond in Mitchell Park",why:"One of the few genuinely democratic public spaces in the city."}},
+{t:"Stanford Theatre",b:1,cl:"celebrate",info:{what:"1925 movie palace, restored by the Packard Foundation",why:"Tech philanthropy directly preserving community culture."}},
+{t:"HP Garage",b:1,cl:"celebrate",info:{what:"367 Addison Avenue \u2014 California Historical Landmark 976",why:"The origin myth, and a real place in a real neighborhood."}},
+{t:"De Forest",b:1,cl:"celebrate",info:{what:"Lee de Forest, inventor of the triode vacuum tube, Palo Alto 1910s",why:"A direct precursor to the transistor."}},
+{t:"Harold & Maude movie",b:1,cl:"celebrate",info:{what:"1971 cult film by Hal Ashby, filmed at Homer and Waverley",why:"A great American film about conformity, with a specific Palo Alto address."}},
+{t:"Birge Clark Architect",b:1,cl:"celebrate",info:{what:"Palo Alto\u2019s defining architect \u2014 designed the PAM building",why:"His Spanish Colonial Revival style defined downtown. He designed the museum\u2019s home."}},
+{t:"Herbert Hoover / Hoover Institute",b:1,cl:"celebrate",info:{what:"The founding of the Hoover Institution at Stanford",why:"Connects Palo Alto to a specific strand of American political thought."}},
+{t:"History of the Palo Alto Medical Clinic",b:1,cl:"belong",info:{what:"The founding of the PAMF, housed in the Roth Building",why:"The museum lives in the clinic\u2019s original building."}},
+{t:"A clinic office & exam room",b:1,cl:"belong",info:{what:"A recreation of the original medical space at the Roth Building",why:"The most specific possible connection to the building\u2019s history."}},
+{t:"Grateful Dead History",b:1,cl:"belong",info:{what:"The Dead formed in Palo Alto in 1965",why:"The city\u2019s most consequential cultural export from the pre-tech era."}},
+{t:"Black History / Angela Davis",b:1,cl:"excavate",info:{what:"A note connecting Black history in Palo Alto to Angela Davis",why:"Signals desire for the museum to include radical political thought."}},
+{t:"History of AME ZION CHURCH",b:1,cl:"excavate",info:{what:"The AME Zion Church and Palo Alto\u2019s Black community",why:"Community anchor during the redlining era."}},
+{t:"Segregation in Palo Alto",b:1,cl:"excavate",info:{what:"A direct request for an exhibit on racial segregation",why:"Not subtle. Not framed. A direct demand."}},
+{t:"Southgate vs Eichler \u2014 racial covenants",b:1,cl:"excavate",info:{what:"Two neighborhoods, two racial policies, written in deeds",why:"The contrast is the exhibit."}},
+{t:"Ohlone Roots",b:1,cl:"excavate",info:{what:"The Muwekma Ohlone presence and land stewardship philosophy",why:"They managed this land for thousands of years."}},
+{t:"Juana Briones",b:1,cl:"excavate",info:{what:"1802-1889. Californio ranchera. Purchased the land that became Palo Alto in 1844. Won her land claim at the US Supreme Court.",why:"She owned the land. Her adobe wall is the museum\u2019s first exhibit."}},
+{t:"Saving Winter Lodge!",b:1,cl:"belong",info:{what:"A local civic preservation campaign",why:"Active attachment to specific Palo Alto places."}},
+{t:"DON'T FORGET SOUTH PALO ALTO!",b:1,cl:"excavate",info:{what:"In caps. A direct call to include the historically less affluent south.",why:"Urgent. South Palo Alto is often absent from the city\u2019s self-image."}},
+{t:"First African-American Church in PA",b:1,cl:"excavate",info:{what:"The first Black church established in Palo Alto",why:"An act of community resilience during the redlining era."}},
+{t:"Magic Bridge",b:1,cl:"belong",info:{what:"Palo Alto\u2019s fully accessible playground, built 2015",why:"Local civic advocacy producing a nationally recognized model."}},
+{t:"Woman's Club founding",b:1,cl:"belong",info:{what:"The Woman\u2019s Club of Palo Alto, founded 1894",why:"Civic infrastructure built by women that the tech narrative erases."}},
+{t:"Genesis of Ravenswood Classroom Partners",b:1,cl:"excavate",info:{what:"Partnership between Palo Alto and East Palo Alto students",why:"One of the few institutional acknowledgments of the disparity across Highway 101."}},
+{t:"Palo Alto during WWII",b:1,cl:"witness",info:{what:"Stanford\u2019s military research, Japanese-American internment",why:"WWII reshaped the Peninsula\u2019s demographics more than any event before the tech boom."}},
+{t:"Bergman's Department Store",b:1,cl:"belong",info:{what:"Downtown department store, a University Avenue anchor",why:"The loss of downtown retail to tech offices is a lived experience."}},
+{t:"Rapp's Shoes / Swain's Music",b:1,cl:"belong",info:{what:"Longtime University Avenue retail",why:"The independent retail ecology that tech office conversion displaced."}},
+{t:"Varsity Theater history",b:1,cl:"belong",info:{what:"The Varsity Theatre \u2014 movie house, bookstore, coworking space",why:"Its transformations are a perfect timeline of Palo Alto\u2019s economic evolution."}},
+{t:"Dance Culture \u2014 Friday Night Waltz",b:1,cl:"belong",info:{what:"A long-running community ballroom event",why:"A community tradition alongside but independent of the university\u2019s culture."}},
+{t:"Barron Park Railroad",b:1,cl:"belong",info:{what:"The narrow-gauge railroad through Barron Park",why:"Pre-car infrastructure shaped the neighborhoods. The routes became bike paths."}},
+{t:"Annexation of Barron Park",b:1,cl:"belong",info:{what:"Barron Park was an unincorporated community annexed in 1975",why:"Still has a distinct identity. Its donkeys are its most famous feature."}},
+{t:"Peninsula Times-Tribune",b:1,cl:"belong",info:{what:"Palo Alto\u2019s daily newspaper, closed 1993",why:"The archives are a primary source for the city\u2019s pre-tech history."}},
+{t:"Miss Harker's School since 1907",b:1,cl:"belong",info:{what:"Harker School, founded 1893",why:"The private education layer of Palo Alto."}},
+{t:"Palo Alto Yacht Harbor",b:1,cl:"belong",info:{what:"The former yacht harbor near the Baylands",why:"Palo Alto\u2019s relationship with the Bay \u2014 rarely discussed in its innovation narrative."}},
+{t:"1906 Earthquake",b:1,cl:"witness",info:{what:"The 7.9 quake that destroyed San Francisco",why:"Accelerated Peninsula development as refugees moved south."}},
+{t:"The 1955/56 Flood",b:1,cl:"witness",info:{what:"A major flood event that caused significant damage",why:"The region\u2019s geology is as consequential as its culture."}},
+{t:"Palo Alto Olympic Athletes",b:1,cl:"celebrate",info:{what:"Multiple Olympians trained at Stanford or grew up here",why:"A story about access, investment, and excellence."}},
+{t:"Telesensory Systems Inc.",b:1,cl:"celebrate",info:{what:"Assistive technology pioneer, started on Middlefield + East Meadow",why:"An underrecognized tech origin story with direct social impact."}},
+{t:"Peninsula Creamery",b:1,cl:"belong",info:{what:"Diner and ice cream parlor on Emerson, since 1933",why:"Survived the tech transformation of downtown. Represents continuity."}},
+{t:"Connect with East Palo Alto Historical Museum",b:1,cl:"convene",info:{what:"East Palo Alto Historical and Agricultural Society",why:"PAM\u2019s story cannot be told without crossing the Highway 101 boundary."}},
+{t:"Willie Mays",b:1,cl:"excavate",info:{what:"Baseball Hall of Famer, reportedly refused housing in the Bay Area",why:"The Peninsula\u2019s racial geography touched even its greatest heroes."}},
+{t:"Investigate Fran \u2014 early Black owner of PA business",b:1,cl:"excavate",info:{what:"Fran from Fran\u2019s Newsstand \u2014 an early Black business owner",why:"The word \u2018investigate\u2019 signals an active research request, not a known fact."}},
+{t:"Story of the redwood trees",b:1,cl:"inhabit",info:{what:"The coastal redwoods planted along the Caltrain corridor",why:"Living infrastructure planted over a century ago."}},
+{t:"FOOTHILLS PARK",b:1,cl:"inhabit",info:{what:"Palo Alto\u2019s large open space reserve",why:"Beloved but contested public space. Historically restricted to residents."}},
+{t:"History of bikes in Palo Alto",b:1,cl:"belong",info:{what:"The evolution of cycling culture and infrastructure",why:"Palo Alto\u2019s bike culture is part of its civic identity."}},
+{t:"Affordable Housing Projects in Palo Alto",b:1,cl:"witness",info:{what:"The city\u2019s contested history of affordable housing",why:"One of the most live civic disputes in the city."}},
+// Board 2: From Hooves to Hollywood
+{t:"Eadweard Muybridge",b:2,cl:"celebrate",info:{what:"Conducted horse motion studies at Stanford\u2019s stock farm in 1878, inventing the precursor to cinema",why:"The first motion picture sequences in history. The Valley\u2019s visual technology lineage begins here."}},
+{t:"Steve Jobs",b:2,cl:"celebrate",info:{what:"Co-founder of Apple, lived in Palo Alto most of his life",why:"He lived on Waverley Street. Personal as well as legendary."}},
+{t:"Joan Baez",b:2,cl:"belong",info:{what:"Folk musician, grew up in Palo Alto, attended Paly",why:"The only figure on all six boards."}},
+{t:"Ollie Johnston \u2014 Disney, born in PA",b:2,cl:"celebrate",info:{what:"One of Disney\u2019s Nine Old Men, born in Palo Alto 10/31/1912, lived in Juana Briones\u2019 house",why:"That he lived in Briones\u2019 house connects the city\u2019s pre-tech and creative histories."}},
+{t:"Alvy Ray Smith (Pixar)",b:2,cl:"celebrate",info:{what:"Co-founder of Pixar, inventor of the alpha channel",why:"His invention is foundational to every digital image with transparency."}},
+{t:"PDI / PIXAR team",b:2,cl:"celebrate",info:{what:"Pacific Data Images and the team members who went to Pixar",why:"A specific Peninsula creative genealogy."}},
+{t:"David Kelley & Dennis Boyle (IDEO)",b:2,cl:"celebrate",info:{what:"IDEO co-founders \u2014 Kelley founded the Stanford d.school",why:"IDEO\u2019s design methodology has been as influential as any tech product from the Valley."}},
+{t:"HP Audio Oscillator \u2014 Disney Fantasia",b:2,cl:"celebrate",info:{what:"HP\u2019s first product was bought by Disney for Fantasia (1940)",why:"The first product HP sold went into one of cinema\u2019s most ambitious films."}},
+{t:"David Packard & Stanford Theatre",b:2,cl:"celebrate",info:{what:"David Packard\u2019s family foundation owns the Stanford Theatre",why:"Tech wealth used to preserve community culture."}},
+{t:"Greg Brown (Muralist, Univ Ave)",b:2,cl:"celebrate",info:{what:"Muralist behind public art on University Avenue",why:"The most visible public art in downtown Palo Alto."}},
+{t:"Harold & Maude",b:2,cl:"celebrate",info:{what:"1971 Hal Ashby film, shot at Homer and Waverley",why:"A great American film about conformity, filmed at a specific Palo Alto intersection."}},
+{t:"DOUBLE INDEMNITY filmed yup!",b:2,cl:"celebrate",info:{what:"1944 Billy Wilder noir \u2014 the \u2018filmed yup!\u2019 is part of the note",why:"Genuine local pride. A canonical Hollywood film shot in Palo Alto, almost unknown."}},
+{t:"Bob Waksberg",b:2,cl:"celebrate",info:{what:"Creator of BoJack Horseman, grew up in Palo Alto",why:"One of the best TV dramas of the 2010s, from the city that also produced Silicon Valley."}},
+{t:"Jon M Chu \u2014 Wicked",b:2,cl:"celebrate",info:{what:"Director of Crazy Rich Asians and Wicked, grew up in Los Altos",why:"A direct example of the Asian-American creative talent the Peninsula produced."}},
+{t:"Jeremy Lin (Paly)",b:2,cl:"celebrate",info:{what:"NBA player, Paly Class of 2006 \u2014 Linsanity 2012",why:"One of the great underdog narratives with a direct Palo Alto address."}},
+{t:"Firoozeh Dumas X2!!",b:2,cl:"belong",info:{what:"Author of Funny in Farsi, grew up in the Bay Area \u2014 nominated twice",why:"A defining text of the Bay Area immigrant experience."}},
+{t:"The Donnas",b:2,cl:"belong",info:{what:"All-female rock band formed at Paly in 1993",why:"Formed in a Palo Alto high school."}},
+{t:"Tuck & Patti & Windham Hill Records",b:2,cl:"belong",info:{what:"Jazz duo; Windham Hill Records, founded in Palo Alto 1976",why:"Windham Hill invented New Age music, founded in a Palo Alto garage."}},
+{t:"Kenneth Patchen (Beat poet)",b:2,cl:"excavate",info:{what:"Poet, lived in Palo Alto 1956 until his death",why:"He lived here while Ginsberg was at Berkeley. Connects Palo Alto to a literary world nobody associates with it."}},
+{t:"CHANEL MILLER",b:2,cl:"excavate",info:{what:"Author of Know My Name, sexual assault survivor \u2014 born and raised in Palo Alto",why:"Grew up here, assaulted at Stanford, reclaimed her identity through writing. The most important living author with a direct Palo Alto biography."}},
+{t:"Fremont Older / Cora Older",b:2,cl:"excavate",info:{what:"Muckraking journalist and his writer wife, lived near Palo Alto",why:"Their salons brought together the Bay Area\u2019s intellectual and reformist community."}},
+{t:"1915 Palo Alto Film Corp / Essanay",b:2,cl:"excavate",info:{what:"Early silent film production in Palo Alto \u2014 almost entirely forgotten",why:"The film industry had a Palo Alto chapter before Hollywood became dominant."}},
+{t:"UNAFF United Nations Film Festival",b:2,cl:"convene",info:{what:"UN Association Film Festival, in Palo Alto since 1998",why:"Connects local culture to global justice."}},
+{t:"TERI HATCHER !!!",b:2,cl:"wish",info:{what:"Actress \u2014 from Sunnyvale",why:"Three exclamation marks make this the most emphatic single entry in the dataset."}},
+{t:"Tom Hanks",b:2,cl:"wish",info:{what:"Actor, grew up in Oakland and Redwood City",why:"Bay Area roots often cited as central to his everyman persona."}},
+{t:"Sigourney Weaver",b:2,cl:"wish",info:{what:"Actress \u2014 Stanford graduate",why:"One of few major Hollywood stars with an academic connection to Palo Alto."}},
+{t:"SHREK \u2014 Perry the Donkey!!",b:2,cl:"wish",info:{what:"A note connecting the Barron Park donkeys to the Shrek film franchise",why:"Someone made this connection. The delight is the data."}},
+{t:"WOZ",b:2,cl:"celebrate",info:{what:"Steve Wozniak, co-founder of Apple",why:"The engineer\u2019s engineer."}},
+{t:"Ginger Rogers (Stanford Theatre)",b:2,cl:"celebrate",info:{what:"Legendary actress and dancer, reportedly performed at the Stanford Theatre",why:"The Stanford Theatre connection roots a Hollywood legend in a specific Palo Alto place."}},
+{t:"GIA COPPOLA",b:2,cl:"celebrate",info:{what:"Filmmaker, granddaughter of Francis Ford Coppola",why:"The Coppola family\u2019s Bay Area roots run deep."}},
+{t:"Stephan Jenkins / Third Eye Blind",b:2,cl:"belong",info:{what:"Third Eye Blind, formed in San Francisco, Jenkins grew up in the Bay Area",why:"Semi-Charmed Life is one of the defining Bay Area alt-rock songs of the 1990s."}},
+{t:"MURALIST \u2014 who did the murals here?",b:2,cl:"witness",info:{what:"A question about the murals at the museum\u2019s building",why:"Not a nomination. A research request. The question form makes it unusual."}},
+// Board 3: Life of Trees
+{t:"El Palo Alto tree (nature)",b:3,cl:"inhabit",info:{what:"The ancient coastal redwood that gives the city its name",why:"Still alive. The city\u2019s oldest living resident."}},
+{t:"PLEASE MAKE NEW PLAQUE \u2014 Dawn Redwood",b:3,cl:"inhabit",info:{what:"In caps \u2014 a demand for a new plaque on the historic Dawn Redwood",why:"The loudest note in the dataset. Someone has been waiting for this for a long time."}},
+{t:"HIGHLIGHT the DAWN SEQUOIA by the Post Office",b:3,cl:"inhabit",info:{what:"A specific tree at a specific Palo Alto address",why:"The specificity signals genuine local knowledge and attachment."}},
+{t:"GRATEFUL DEAD PLAQUE",b:3,cl:"belong",info:{what:"A demand for a plaque commemorating the Grateful Dead\u2019s Palo Alto origins",why:"This note appears on the nature board. Someone connected the Dead\u2019s origin to the city\u2019s physical landscape."}},
+{t:"TREE WALKS with Canopy",b:3,cl:"inhabit",info:{what:"Guided tree walks with Canopy, the urban forestry nonprofit",why:"Shows awareness of existing civic infrastructure. The desire is to activate it."}},
+{t:"Walking tour of Heritage Trees",b:3,cl:"inhabit",info:{what:"A self-guided walk through Palo Alto\u2019s significant trees",why:"Heritage trees as civic landmarks \u2014 a different kind of architecture tour."}},
+{t:"Baylands Touch Pool",b:3,cl:"inhabit",info:{what:"An interactive nature experience at the Baylands",why:"Hands-on engagement with the ecosystem that most residents drive past."}},
+{t:"Baylands Birds / BIRDING",b:3,cl:"inhabit",info:{what:"Birding programs at the Baylands",why:"One of the most significant bird habitats on the Pacific Flyway."}},
+{t:"Lucy Evans (Baylands)",b:3,cl:"inhabit",info:{what:"Lucy Evans, longtime steward of the Palo Alto Baylands",why:"Naming her specifically \u2014 she is the human face of the Baylands preservation effort."}},
+{t:"Native plant garden / greenhouse",b:3,cl:"inhabit",info:{what:"A living native plant exhibit",why:"Not a display \u2014 a living ecosystem as exhibit."}},
+{t:"Native plants cyanotype workshop",b:3,cl:"inhabit",info:{what:"A making activity using native plants and sunlight-sensitive paper",why:"Hands-on, place-based, intergenerational."}},
+{t:"Palo Alto Urban Canopy Forest",b:3,cl:"inhabit",info:{what:"A visualization of the city\u2019s tree canopy coverage",why:"Pride in the canopy, and a desire to make it visible."}},
+{t:"Environmental movement / Earth Day 1990",b:3,cl:"witness",info:{what:"The environmental activism that shaped Palo Alto in the late 20th century",why:"Earth Day\u2019s Palo Alto chapter is part of the city\u2019s activist history."}},
+{t:"Trees + Climate Change \u2014 what works?",b:3,cl:"inhabit",info:{what:"A forward-looking question about urban trees and climate resilience",why:"The only note on any board that explicitly asks about the future in a practical, scientific frame."}},
+{t:"Eucalyptus \u2014 Long term impacts GOOD & BAD",b:3,cl:"witness",info:{what:"A nuanced request to examine the complicated legacy of eucalyptus in California",why:"Eucalyptus is both a beloved landscape tree and an invasive fire hazard. Someone wants the complexity shown."}},
+{t:"Edible Native Plants",b:3,cl:"inhabit",info:{what:"Interactive exhibit about native edible plants",why:"Connects ecology to food culture and to Indigenous land use."}},
+{t:"Tree planting with Canopy",b:3,cl:"inhabit",info:{what:"A participatory tree-planting program",why:"Not observation \u2014 participation."}},
+{t:"Name the trees",b:3,cl:"inhabit",info:{what:"An identification activity",why:"The simplest possible connection between the visitor and the living city."}},
+{t:"Foothills Park (nature)",b:3,cl:"inhabit",info:{what:"Palo Alto\u2019s large open space reserve",why:"Beloved public space. Appears on multiple boards."}},
+{t:"Install a Thomas Dambo Troll",b:3,cl:"wish",info:{what:"A giant reclaimed-wood sculpture by Danish artist Thomas Dambo",why:"A joyful, community-gathering wish."}},
+{t:"Hug a tree \u2661",b:3,cl:"inhabit",info:{what:"The simplest possible nature experience \u2014 with a heart drawn next to it",why:"The second heart in the entire dataset. Genuine warmth toward this idea."}},
+{t:"Read poems under the trees",b:3,cl:"inhabit",info:{what:"A literary programming idea in a natural setting",why:"Connects the museum\u2019s creative and natural identities."}},
+{t:"Not only trees \u2014 all native plants bio-diversity",b:3,cl:"inhabit",info:{what:"A call to expand beyond trees to the full ecosystem",why:"Someone knows the difference. They want the full picture."}},
+{t:"animation of tidal activity in Baylands",b:3,cl:"inhabit",info:{what:"A visualization of the tidal patterns in the Baylands",why:"Making the invisible visible."}},
+// Board 4: Imagine a World Without Palo Alto
+{t:"Fairchild Semiconductor",b:4,cl:"celebrate",info:{what:"1957 \u2014 the traitorous eight create the semiconductor template",why:"The true origin point. Without it, no Intel, no Apple, no Google."}},
+{t:"Syntex",b:4,cl:"celebrate",info:{what:"Developed the first oral contraceptive, moved to Palo Alto 1963",why:"One of the most consequential medical innovations of the 20th century. Almost nobody knows it happened here."}},
+{t:"Varian",b:4,cl:"celebrate",info:{what:"Founded 1948 \u2014 one of the first Silicon Valley companies",why:"Predates HP as a Peninsula tech anchor."}},
+{t:"HP 12-C Calculator",b:4,cl:"celebrate",info:{what:"HP\u2019s legendary financial calculator, 1981, still in production",why:"One of the longest-lived products in tech history."}},
+{t:"Apple IIE",b:4,cl:"celebrate",info:{what:"Apple\u2019s most successful early PC, 1983",why:"The machine that put computing in American schools."}},
+{t:"Palm Pilot",b:4,cl:"celebrate",info:{what:"PDA developed by Palm Computing in Palo Alto, 1996",why:"Palm invented the modern handheld form factor."}},
+{t:"Industrial Design: IDEO, Lunar, Matrix",b:4,cl:"celebrate",info:{what:"The design firms that shaped the physical form of Valley products",why:"IDEO invented the first commercial mouse and human-centered design."}},
+{t:"Startup Swag / Original HP & Apple designs",b:4,cl:"celebrate",info:{what:"Artifacts from defunct startups and original product designs",why:"The folk art of Silicon Valley \u2014 ephemeral, abundant, eloquent."}},
+{t:"Lockheed Missiles & satellite tracking",b:4,cl:"celebrate",info:{what:"Lockheed\u2019s space and defense division",why:"The Peninsula\u2019s aerospace history is nearly absent from the tech narrative."}},
+{t:"E Vehicles / Self driving Cars",b:4,cl:"celebrate",info:{what:"The emerging electric and autonomous vehicle landscape",why:"A forward-facing entry in a dataset mostly oriented toward the past."}},
+{t:"World Cup '94",b:4,cl:"celebrate",info:{what:"1994 FIFA World Cup, hosted partly at Stanford Stadium",why:"Stanford hosted six games including the final. Uncommemorated."}},
+{t:"Products designed in Palo Alto",b:4,cl:"celebrate",info:{what:"A category request",why:"An invitation to curate the full breadth of Valley design."}},
+{t:"Bike Friendly Community / bike lanes",b:4,cl:"belong",info:{what:"Palo Alto\u2019s cycling infrastructure and culture",why:"One of the city\u2019s genuine civic achievements."}},
+{t:"SERVICE CLUBS: ROTARY, KIWANIS",b:4,cl:"belong",info:{what:"Civic organizations that have structured community life for decades",why:"The pre-tech civic fabric is nearly invisible in Palo Alto\u2019s self-image."}},
+{t:"Historic families + traditions",b:4,cl:"belong",info:{what:"A call to document families who have been here across generations",why:"The counterpoint to the transience narrative."}},
+{t:"Old movie houses \u2014 Festival with beanbags!",b:4,cl:"belong",info:{what:"A call to recreate the experience of Palo Alto\u2019s historic movie theaters",why:"The beanbag detail is the most joyful specificity in the entire dataset."}},
+{t:"Old Restaurant Menus",b:4,cl:"belong",info:{what:"Menus as historical documents",why:"What was considered desirable and affordable at a moment in time."}},
+{t:"Ming\u2019s Pressed Duck",b:4,cl:"belong",info:{what:"Ming\u2019s Restaurant, a Chinese-American institution for decades",why:"The Chinese-American culinary history that ran alongside, and often served, the tech industry."}},
+{t:"Lost Schools: Crescent Park, Briones, Ross Road",b:4,cl:"belong",info:{what:"Elementary schools closed over the decades",why:"School closures map onto neighborhood demographic change."}},
+{t:"Palo Alto Libraries",b:4,cl:"belong",info:{what:"The library system as a civic institution",why:"The closest thing Palo Alto currently has to a civic commons."}},
+{t:"Children\u2019s Theater and library",b:4,cl:"belong",info:{what:"Two beloved community institutions named together",why:"People think about civic infrastructure together, not separately."}},
+{t:"Local transportation history: horses, bus, trolley",b:4,cl:"belong",info:{what:"Pre-car transportation infrastructure",why:"The routes shaped the neighborhoods."}},
+{t:"Lost Bakeries: Blum\u2019s, Prolific Oven",b:4,cl:"belong",info:{what:"Beloved bakeries that no longer exist",why:"Food as memory."}},
+{t:"Trails of Palo Alto",b:4,cl:"inhabit",info:{what:"The network of hiking and biking trails",why:"One of the most democratically used public resources in the city."}},
+{t:"Magical Public Spaces for every BODY",b:4,cl:"inhabit",info:{what:"A call for inclusive public space programming",why:"The \u2018every BODY\u2019 emphasis signals disability access and inclusivity as explicit values."}},
+{t:"LOMA Prieta 1989 Earthquake",b:4,cl:"witness",info:{what:"7.1 magnitude earthquake that killed 63",why:"A shared trauma point. The region\u2019s geology is as consequential as its culture."}},
+{t:"Theranos and the saga",b:4,cl:"witness",info:{what:"Blood-testing startup, $9B, exposed as fraudulent in 2015",why:"The single entry that holds both the innovation myth and its refutation at once."}},
+{t:"Theranos artifacts: lab tubes, Edison, covers",b:4,cl:"witness",info:{what:"The physical objects of the Theranos saga",why:"The device that never worked is a more honest representation of hype culture than any garage exhibit."}},
+{t:"The Wave \u2014 Ron Jones, Cubberley",b:4,cl:"witness",info:{what:"1967 social experiment at Cubberley High School",why:"Jones created a fascist movement in his classroom to show how it happens."}},
+{t:"INSTITUTE FOR THE FUTURE",b:4,cl:"witness",info:{what:"The Palo Alto-based futures research organization",why:"One of the few institutions in the city explicitly dedicated to thinking about what comes next."}},
+{t:"EUGENICS",b:4,cl:"excavate",info:{what:"Stanford\u2019s early connection to the eugenics movement",why:"David Starr Jordan, first Stanford president, was a prominent eugenicist. Documented but rarely surfaced."}},
+{t:"Chinese Railroad Worker",b:4,cl:"excavate",info:{what:"The estimated 10,000 to 20,000 Chinese laborers who built the western transcontinental railroad",why:"The railroad that made Stanford\u2019s fortune was built by workers who received no credit and were later excluded by law."}},
+{t:"Japanese Farmers on Homer & High",b:4,cl:"excavate",info:{what:"Japanese-American farming families before WWII internment",why:"Removed to camps, land not returned."}},
+{t:"Red-lining",b:4,cl:"excavate",info:{what:"Racial covenants that excluded Black residents from most of Palo Alto",why:"Palo Alto\u2019s racial geography was deliberate."}},
+{t:"Muwekma land acknowledgement",b:4,cl:"excavate",info:{what:"Formal recognition of the Muwekma Ohlone people",why:"A federally unrecognized tribe actively seeking re-recognition."}},
+{t:"Contact Muwekma Ohlone tribe",b:4,cl:"excavate",info:{what:"A specific action item \u2014 contact the tribe and SJSU Anthropology",why:"Goes further than acknowledgement. Asks the museum to build a real relationship."}},
+{t:"Palo Alto was part of Mexico",b:4,cl:"excavate",info:{what:"California was Mexican territory until 1848",why:"The street grid sits on land that was Mexico within living memory of the city\u2019s founders."}},
+{t:"Stanford & early indigenous human history",b:4,cl:"excavate",info:{what:"A call to document pre-contact Indigenous history",why:"The university\u2019s founding sits on Ohlone land. That history is largely absent from its public narrative."}},
+{t:"Vietnam War Protests / SRI / Student Activists",b:4,cl:"excavate",info:{what:"Activism against Stanford Research Institute\u2019s Vietnam-era weapons research",why:"Stanford\u2019s role in military research is a chapter Palo Alto has not fully reckoned with."}},
+{t:"History of EPA \u2014 aka Little Nairobi",b:4,cl:"excavate",info:{what:"East Palo Alto\u2019s Black community \u2014 the \u2018Little Nairobi\u2019 nickname",why:"East Palo Alto\u2019s history is inseparable from Palo Alto\u2019s. Almost nobody knows this."}},
+{t:"Where did the \u2018help\u2019 live?",b:4,cl:"excavate",info:{what:"A direct question about the domestic workers who staffed affluent households",why:"One of the sharpest entries in the entire dataset."}},
+{t:"The Further Bus",b:4,cl:"excavate",info:{what:"Ken Kesey\u2019s psychedelic bus, driven by Neal Cassady",why:"An iconic counterculture object. Runs parallel to and critical of the tech story."}},
+{t:"ACID TEST",b:4,cl:"excavate",info:{what:"Ken Kesey\u2019s psychedelic events, 1965-66",why:"The counterculture\u2019s defining ritual, in Palo Alto\u2019s backyard."}},
+{t:"NO coffee house for Jerry Garcia!",b:4,cl:"excavate",info:{what:"A lament \u2014 no Palo Alto venue for Garcia",why:"A critique: this city had the counterculture next door and did not make space for it."}},
+{t:"MFU \u2014 Midpeninsula Free University",b:4,cl:"excavate",info:{what:"Alternative educational institution founded 1966",why:"A direct ancestor of the information-should-be-free ideology."}},
+{t:"Women in flower growing",b:4,cl:"excavate",info:{what:"The women who ran the flower farming operations",why:"An agricultural labor story that is both gendered and erased."}},
+{t:"UNAFF United Nations Film Festival",b:4,cl:"convene",info:{what:"UN Association Film Festival, in Palo Alto since 1998",why:"Connects local culture to global justice. Appears on multiple boards."}},
+// Board 5: I Am Palo Alto
+{t:"Juana Briones",b:5,cl:"excavate",info:{what:"1802-1889. Californio ranchera. Purchased the land that became Palo Alto in 1844. Won her land claim at the US Supreme Court.",why:"She owned the land. Her adobe wall is the museum\u2019s first exhibit. She is the reason the museum exists where it does."}},
+{t:"Russell Lee MD",b:5,cl:"belong",info:{what:"Founding figure of the Palo Alto Medical Foundation, housed in the Roth Building",why:"The museum lives in the building Russell Lee built. His story is the building\u2019s story. Named twice."}},
+{t:"Birge Clark",b:5,cl:"celebrate",info:{what:"Palo Alto\u2019s defining architect \u2014 designed hundreds of local buildings including 300 Homer Ave",why:"He designed the museum\u2019s home. Named three times on this board."}},
+{t:"Ellen Fletcher",b:5,cl:"celebrate",info:{what:"Longtime Palo Alto city council member, champion of cycling infrastructure",why:"The bike lanes are partly her legacy. A great civic actor."}},
+{t:"Josephine Duveneck",b:5,cl:"excavate",info:{what:"Social activist, Quaker, co-founded Hidden Villa \u2014 an early multicultural and environmental education center",why:"An underrecognized figure in Bay Area progressive history."}},
+{t:"Donaldina Cameron",b:5,cl:"excavate",info:{what:"Presbyterian missionary who rescued Chinese women and girls from forced servitude in San Francisco",why:"Her story connects Palo Alto to the Chinese-American history of the Bay Area."}},
+{t:"Alice Park \u2014 Suffragist 1861-1961",b:5,cl:"excavate",info:{what:"A Palo Alto suffragist with a century-long life",why:"A direct link to the women\u2019s suffrage movement, rooted in this city."}},
+{t:"Jane Stanford",b:5,cl:"excavate",info:{what:"Co-founder of Stanford University",why:"Her story \u2014 including her contested death \u2014 is underrepresented relative to her husband\u2019s."}},
+{t:"Julia Morgan",b:5,cl:"celebrate",info:{what:"Architect, first woman licensed to practice architecture in California",why:"Her Bay Area connection is deep. Her career was groundbreaking."}},
+{t:"Elizabeth Gamble",b:5,cl:"belong",info:{what:"Philanthropist, the Gamble Garden is named for her family",why:"A direct civic legacy still visible in the city."}},
+{t:"Chanel Miller",b:5,cl:"excavate",info:{what:"Author of Know My Name. Born and raised in Palo Alto. Named twice \u2014 once directly, once as \u2018Smily One\u2019 with reference to a mural queuing for years at Stanford.",why:"A live, unresolved civic demand. The most important living author with a direct Palo Alto biography."}},
+{t:"William Shockley",b:5,cl:"witness",info:{what:"Physicist, co-inventor of the transistor, founder of Shockley Semiconductor \u2014 and a prominent eugenicist who testified before Congress about racial differences in intelligence.",why:"The most charged name on the board. Named in the same dataset as \u2018Eugenics with inspired Hitler. NO THANKS.\u2019 The museum must hold both his technological legacy and his ideology simultaneously."}},
+{t:"Fran from Fran\u2019s News \u2014 early Black owner",b:5,cl:"excavate",info:{what:"Fran, owner of Fran\u2019s Newsstand \u2014 an early Black business owner in Palo Alto",why:"Named by someone who knows the name. The story has not been told."}},
+{t:"The Lee Brothers \u2014 early Black PA business",b:5,cl:"excavate",info:{what:"Early African American family in Palo Alto",why:"Part of the Black Palo Alto history that multiple boards name as entirely absent from the city\u2019s story."}},
+{t:"Diane Greene founder VMware",b:5,cl:"celebrate",info:{what:"Co-founder of VMware, one of the most significant women in tech",why:"A Valley founder whose story is less told than her male counterparts\u2019."}},
+{t:"Pitch Johnson",b:5,cl:"celebrate",info:{what:"Pioneer venture capitalist \u2014 was present at the event",why:"Named in person. A living piece of the history."}},
+{t:"Reid Hoffman",b:5,cl:"celebrate",info:{what:"Co-founder of LinkedIn",why:"LinkedIn was founded in Palo Alto."}},
+{t:"Bob Shaw",b:5,cl:"belong",info:{what:"Palo Alto civic figure \u2014 named in large letters",why:"The emphatic lettering suggests genuine local esteem."}},
+{t:"Marcus Stedman (architect)",b:5,cl:"excavate",info:{what:"An architect whose story has not been widely told",why:"Named alongside the excavation cluster. Someone knows this name and wants it remembered."}},
+{t:"Lanie Wheeler",b:5,cl:"belong",info:{what:"A Palo Alto civic figure \u2014 named twice on this board",why:"The repetition signals genuine esteem."}},
+{t:"Steve Jobs",b:5,cl:"celebrate",info:{what:"Co-founder of Apple, lived in Palo Alto",why:"Named multiple times. Personal as well as legendary."}},
+{t:"The Wojcicki Family",b:5,cl:"celebrate",info:{what:"Esther, Anne, Susan \u2014 three generations of achievement rooted in Palo Alto",why:"Named multiple times. A different kind of Valley legacy."}},
+{t:"Grace Slick",b:5,cl:"belong",info:{what:"Jefferson Airplane singer, Bay Area roots \u2014 named twice",why:"The counterculture\u2019s female voice, claimed as a Palo Alto figure."}},
+{t:"Joan Baez, Jerry Garcia, Jane Stanford, Grace Slick",b:5,cl:"belong",info:{what:"Four women with Palo Alto connections named on a single note",why:"The grouping is the argument: the museum should be as much about these women as about the tech founders."}},
+{t:"Alejandro Zaffaroni",b:5,cl:"celebrate",info:{what:"Pioneer in biotech and drug delivery technology, based in Palo Alto",why:"An underrecognized figure in the Valley\u2019s biotech history."}},
+{t:"Jean Gong",b:5,cl:"excavate",info:{what:"Palo Alto civic figure and community organizer",why:"Named in the context of people whose stories the community wants told."}},
+{t:"The original Nurses of the Clinic",b:5,cl:"excavate",info:{what:"The women who staffed the Palo Alto Medical Clinic in the Roth Building",why:"The museum lives in their workplace. Their labor made the building what it was."}},
+{t:"Dr. Esther Clark",b:5,cl:"excavate",info:{what:"Birge Clark\u2019s sister, one of the first pediatricians on the San Francisco Peninsula",why:"Her work in the building that became the museum is the building\u2019s own biography."}},
+{t:"Joe Simitian",b:5,cl:"belong",info:{what:"Santa Clara County Supervisor, former Mayor of Palo Alto",why:"Named on every board that asks for civic figures."}},
+{t:"Perry (the Barron Park donkey) \u2661",b:5,cl:"belong",info:{what:"The beloved donkeys of Barron Park",why:"A figure of genuine local affection \u2014 named on the board for Palo Altans whose stories deserve telling."}},
+{t:"Let's Not ERASE History But Embrace it",b:5,cl:"witness",info:{what:"A positioning statement from the community itself",why:"The most important sentence in the entire dataset. It is the community\u2019s own language for what it wants from this institution."}},
+{t:"First Person Interview Series w/ PA Histories",b:5,cl:"convene",info:{what:"A programming format request \u2014 recorded interviews with local figures",why:"Not a passive exhibit request. An active, ongoing, community-building program."}},
+{t:"Invite Paly Students to Curate an exhibit",b:5,cl:"convene",info:{what:"A call to involve students in active curation",why:"The impulse is participatory. The museum built with, not for."}},
+{t:"Enid Pearson",b:5,cl:"belong",info:{what:"A Palo Alto civic figure",why:"Named alongside other community leaders."}},
+{t:"Alice Zschokke",b:5,cl:"belong",info:{what:"A Palo Alto civic figure",why:"Named in the context of community leaders."}},
+{t:"Lincoln Williams \u2014 Winter Club",b:5,cl:"belong",info:{what:"A civic leader associated with the Winter Club",why:"The Winter Club was a Palo Alto institution."}},
 ];
 
-const CL_COLORS = {celebrate:'#3da838',excavate:'#c0472a',belong:'#b8820a',witness:'#3a6e9c',convene:'#7a5ea8',wish:'#888880'};
-const W = window.innerWidth, H = window.innerHeight;
-const NW = 150, NH = 36; // note dims
-
-// ─── COLLISION-AWARE PLACEMENT ────────────────────────────────────────────────
-// Pack notes into a rect. Columns are capped so full-width notes never overlap
-// horizontally; when a band is dense, notes scale down to fit the row budget.
-function placeInRect(items, rect, seedBase){
-  const r = rng(seedBase);
-  const n = items.length;
-  const maxColsByWidth = Math.max(2, Math.floor(rect.w / (NW*0.72)));
-  const cols = Math.min(maxColsByWidth, Math.ceil(Math.sqrt(n*1.6)));
-  const rows = Math.ceil(n / cols);
-  const cellW = rect.w / cols;
-  // pitch that fits all rows in the band; scale notes if pitch < note height
-  const pitch = rect.h / rows;
-  const scale = Math.min(1, Math.max(0.7, pitch / 34));
-  return items.map((it,i)=>{
-    const cx = i % cols;
-    const cy = Math.floor(i / cols);
-    const jx = (r()-0.5) * Math.max(0,(cellW - NW*scale)) * 0.5;
-    const jy = (r()-0.5) * Math.min(5, pitch*0.12);
-    const x = rect.x + cx*cellW + jx;
-    const y = rect.y + cy*pitch + jy;
-    const rot = (r()-0.5)*4;
-    return {x, y, rot, scale};
-  });
-}
+const CL_COLORS={celebrate:'#3da838',excavate:'#c0472a',belong:'#b8820a',witness:'#3a6e9c',convene:'#7a5ea8',inhabit:'#2a8c7a',wish:'#888880'};
+const W=window.innerWidth,H=window.innerHeight,NW=130;
 
 function rng(seed){let s=seed%2147483647;if(s<=0)s+=2147483646;return()=>{s=s*16807%2147483647;return(s-1)/2147483646;};}
 
-// ─── ZONES ────────────────────────────────────────────────────────────────────
-// Act 1: four board quadrants. Note rects sit below each header and inside the band.
-const BOARD_RECTS = [
-  {x:W*0.03, y:H*0.255, w:W*0.44, h:H*0.205},
-  {x:W*0.53, y:H*0.255, w:W*0.44, h:H*0.205},
-  {x:W*0.03, y:H*0.705, w:W*0.44, h:H*0.195},
-  {x:W*0.53, y:H*0.705, w:W*0.44, h:H*0.195},
+function placeInRect(items,rect,seedBase){
+  const r=rng(seedBase),n=items.length;
+  const maxC=Math.max(2,Math.floor(rect.w/(NW*0.7)));
+  const cols=Math.min(maxC,Math.ceil(Math.sqrt(n*1.6)));
+  const pitch=rect.h/Math.ceil(n/cols);
+  const scale=Math.min(1,Math.max(0.65,pitch/32));
+  const cellW=rect.w/cols;
+  return items.map((it,i)=>{
+    const cx=i%cols,cy=Math.floor(i/cols);
+    return{x:rect.x+cx*cellW+(r()-0.5)*Math.max(0,cellW-NW*scale)*0.4,y:rect.y+cy*pitch+(r()-0.5)*Math.min(4,pitch*0.1),rot:(r()-0.5)*4,scale};
+  });
+}
+
+// Six board rects in a 3-column, 2-row layout
+const BOARD_RECTS=[
+  {x:W*0.01,y:H*0.20,w:W*0.29,h:H*0.21},
+  {x:W*0.35,y:H*0.20,w:W*0.29,h:H*0.21},
+  {x:W*0.69,y:H*0.20,w:W*0.29,h:H*0.21},
+  {x:W*0.01,y:H*0.58,w:W*0.29,h:H*0.25},
+  {x:W*0.35,y:H*0.58,w:W*0.29,h:H*0.25},
+  {x:W*0.69,y:H*0.58,w:W*0.29,h:H*0.25},
 ];
-// Act 2: six cluster zones in three non-overlapping rows. Verb headers live in
-// the left margin (x indented) so the big label never sits on top of notes.
-const CLUSTER_RECTS = {
-  celebrate:{x:W*0.115, y:H*0.215, w:W*0.355, h:H*0.215},
-  excavate: {x:W*0.615, y:H*0.215, w:W*0.355, h:H*0.215},
-  belong:   {x:W*0.115, y:H*0.520, w:W*0.355, h:H*0.150},
-  witness:  {x:W*0.615, y:H*0.520, w:W*0.355, h:H*0.150},
-  convene:  {x:W*0.115, y:H*0.795, w:W*0.355, h:H*0.120},
-  wish:     {x:W*0.615, y:H*0.795, w:W*0.355, h:H*0.120},
+
+// Seven cluster rects
+const CLUSTER_RECTS={
+  celebrate:{x:W*0.13,y:H*0.16,w:W*0.33,h:H*0.19},
+  excavate: {x:W*0.55,y:H*0.16,w:W*0.42,h:H*0.19},
+  belong:   {x:W*0.13,y:H*0.43,w:W*0.33,h:H*0.17},
+  witness:  {x:W*0.55,y:H*0.43,w:W*0.42,h:H*0.17},
+  convene:  {x:W*0.13,y:H*0.68,w:W*0.33,h:H*0.16},
+  inhabit:  {x:W*0.55,y:H*0.68,w:W*0.42,h:H*0.16},
+  wish:     {x:W*0.13,y:H*0.88,w:W*0.74,h:H*0.09},
 };
 
-// Group notes by board and by cluster
-const byBoard = [[],[],[],[]];
-const byCluster = {celebrate:[],excavate:[],belong:[],witness:[],convene:[],wish:[]};
-NOTES.forEach((n,i)=>{ byBoard[n.b].push(i); byCluster[n.cl].push(i); });
+const byBoard=[[],[],[],[],[],[]];
+const byCluster={celebrate:[],excavate:[],belong:[],witness:[],convene:[],inhabit:[],wish:[]};
+NOTES.forEach((n,i)=>{byBoard[n.b].push(i);byCluster[n.cl].push(i);});
 
-// Compute Act 1 positions (board layout)
-const pos1 = new Array(NOTES.length);
+const pos1=new Array(NOTES.length);
 byBoard.forEach((idxs,b)=>{
-  const placed = placeInRect(idxs, BOARD_RECTS[b], b*97+11);
-  idxs.forEach((idx,k)=>{ pos1[idx] = placed[k]; });
+  const placed=placeInRect(idxs,BOARD_RECTS[b],b*97+11);
+  idxs.forEach((idx,k)=>{pos1[idx]=placed[k];});
 });
-// Compute Act 2 positions (cluster layout)
-const pos2 = new Array(NOTES.length);
+const pos2=new Array(NOTES.length);
 Object.keys(byCluster).forEach((cl,ci)=>{
-  const idxs = byCluster[cl];
-  const placed = placeInRect(idxs, CLUSTER_RECTS[cl], ci*131+23);
-  idxs.forEach((idx,k)=>{ pos2[idx] = placed[k]; });
+  const idxs=byCluster[cl];
+  const placed=placeInRect(idxs,CLUSTER_RECTS[cl],ci*131+23);
+  idxs.forEach((idx,k)=>{pos2[idx]=placed[k];});
 });
 
-// ─── BUILD NOTE ELEMENTS ──────────────────────────────────────────────────────
-const canvas = document.getElementById('canvas');
-const noteEls = NOTES.map((n,i)=>{
-  const el = document.createElement('div');
-  el.className = `note ${n.cl}`;
-  el.textContent = n.t;
-  el.style.transform = `translate(${pos1[i].x}px,${pos1[i].y}px) rotate(${pos1[i].rot}deg) scale(${pos1[i].scale||1})`;
-  el.style.zIndex = 10 + (i%12);
+const canvas=document.getElementById('canvas');
+const noteEls=NOTES.map((n,i)=>{
+  const el=document.createElement('div');
+  el.className=`note ${n.cl}`;
+  el.textContent=n.t;
+  el.style.transform=`translate(${pos1[i].x}px,${pos1[i].y}px) rotate(${pos1[i].rot}deg) scale(${pos1[i].scale||1})`;
+  el.style.zIndex=10+(i%12);
   canvas.appendChild(el);
   return el;
 });
-document.getElementById('note-count').textContent = NOTES.length + ' voices';
+document.getElementById('note-count').textContent=NOTES.length+' voices';
 
-// ─── ACT 3: notes fly into spectrum column drop-zones ─────────────────────────
-// We compute target positions inside each .spec-notes container at runtime.
-// Order of columns matches DOM: celebrate, belong, convene, excavate, witness.
-// Wish has no column — those notes fade out in Act 3.
-const SPEC_ORDER = ['celebrate','belong','convene','excavate','witness'];
+// Spectrum order — 6 columns, no Wish
+const SPEC_ORDER=['celebrate','belong','convene','excavate','witness','inhabit'];
 function computeSpec3(){
-  const pos3 = new Array(NOTES.length);
+  const pos3=new Array(NOTES.length);
   SPEC_ORDER.forEach(cl=>{
-    const zone = document.getElementById('sn-'+cl);
-    const rect = zone.getBoundingClientRect();
-    const idxs = byCluster[cl];
-    // single tight stack per column; notes scaled down to fit column width
-    placedStack(idxs, rect, pos3);
+    const zone=document.getElementById('sn-'+cl);
+    const rect=zone.getBoundingClientRect();
+    const idxs=byCluster[cl];
+    const rowH=18;
+    idxs.forEach((idx,k)=>{
+      const r=rng(idx*53+7);
+      pos3[idx]={x:rect.left+(rect.width-NW*0.62)/2+(r()-0.5)*6,y:rect.top+k*rowH+(r()-0.5)*2,rot:(r()-0.5)*2,scale:0.62};
+    });
   });
-  // wish notes: park them below screen, faded (no column for Wish)
-  byCluster.wish.forEach((idx,k)=>{
-    pos3[idx] = {x:W*0.5+(k-1)*55, y:H+90, rot:0, scale:0.7, fade:true};
-  });
+  byCluster.wish.forEach((idx,k)=>{pos3[idx]={x:W*0.5+(k-2)*50,y:H+80,rot:0,scale:0.6,fade:true};});
   return pos3;
 }
-function placedStack(idxs, rect, out){
-  const rowH = 21;
-  idxs.forEach((idx,k)=>{
-    const r = rng(idx*53+7);
-    const x = rect.left + (rect.width-NW*0.66)/2 + (r()-0.5)*8;
-    const y = rect.top + k*rowH + (r()-0.5)*3;
-    out[idx] = {x, y, rot:(r()-0.5)*2.4, scale:0.66};
-  });
-}
-let pos3 = null; // computed lazily on first Act-3 entry & on resize
+let pos3=null;
 
-// ─── TOOLTIP ──────────────────────────────────────────────────────────────────
 const tooltip=document.getElementById('tooltip');
 const ttName=document.getElementById('tt-name'),ttWhat=document.getElementById('tt-what'),ttWhy=document.getElementById('tt-why'),ttCluster=document.getElementById('tt-cluster');
 noteEls.forEach((el,i)=>{
@@ -827,326 +675,221 @@ noteEls.forEach((el,i)=>{
   el.addEventListener('mousemove',e=>posTip(e.clientX,e.clientY));
   el.addEventListener('mouseleave',()=>tooltip.classList.remove('vis'));
 });
-function posTip(mx,my){const tw=290;let l=mx+16,t=my+16;if(l+tw>W)l=mx-tw-8;if(t+150>H)t=my-150-8;tooltip.style.left=l+'px';tooltip.style.top=t+'px';}
+function posTip(mx,my){const tw=280;let l=mx+14,t=my+14;if(l+tw>W)l=mx-tw-6;if(t+140>H)t=my-140-6;tooltip.style.left=l+'px';tooltip.style.top=t+'px';}
 
-// ─── HELPERS ──────────────────────────────────────────────────────────────────
 function lerp(a,b,t){return a+(b-a)*t;}
 function clamp(v,lo,hi){return Math.max(lo,Math.min(hi,v));}
 function ease(t){return t<0.5?2*t*t:-1+(4-2*t)*t;}
 function easeIn(t){return t*t*t;}
 
-// ─── REFS ─────────────────────────────────────────────────────────────────────
 const introPanel=document.getElementById('intro-panel');
-const bh=['bh0','bh1','bh2','bh3'].map(id=>document.getElementById(id));
-const boxes=['box0','box1','box2','box3'].map(id=>document.getElementById(id));
+const bh=[0,1,2,3,4,5].map(i=>document.getElementById('bh'+i));
+const boxes=[0,1,2,3,4,5].map(i=>document.getElementById('box'+i));
 const bridge=document.getElementById('bridge');
-const chs={celebrate:document.getElementById('ch-celebrate'),excavate:document.getElementById('ch-excavate'),belong:document.getElementById('ch-belong'),witness:document.getElementById('ch-witness'),convene:document.getElementById('ch-convene'),wish:document.getElementById('ch-wish')};
+const chs={celebrate:document.getElementById('ch-celebrate'),excavate:document.getElementById('ch-excavate'),belong:document.getElementById('ch-belong'),witness:document.getElementById('ch-witness'),convene:document.getElementById('ch-convene'),inhabit:document.getElementById('ch-inhabit'),wish:document.getElementById('ch-wish')};
 const specPanel=document.getElementById('spectrum-panel');
 const evidence=document.getElementById('evidence-layer');
+const act5=document.getElementById('act5');
 const actLabel=document.getElementById('act-label');
 const hint=document.getElementById('hint');
 const progress=document.getElementById('progress');
-const pd=[0,1,2,3].map(i=>document.getElementById('pd'+i));
+const pd=[0,1,2,3,4].map(i=>document.getElementById('pd'+i));
 const sig=document.getElementById('pam-sig'),ncount=document.getElementById('note-count');
 
 const ACTS=[
-  'Act 1 of 4 — The boards as found',
-  'Act 2 of 4 — Six desires emerge',
-  'Act 3 of 4 — The positioning range',
-  'Act 4 of 4 — What the research says underneath',
+  'Act 1 of 5 \u2014 Six boards as found',
+  'Act 2 of 5 \u2014 Seven desires emerge',
+  'Act 3 of 5 \u2014 The positioning range',
+  'Act 4 of 5 \u2014 What the research says underneath',
+  'Act 5 of 5 \u2014 Where this points',
 ];
 
-// ─── SCROLL ───────────────────────────────────────────────────────────────────
-let lastT34 = 0;
 function onScroll(){
   const driver=document.getElementById('scroll-driver');
   const maxScroll=driver.getBoundingClientRect().height-H;
   const prog=clamp(window.scrollY/maxScroll,0,1);
 
-  // phase windows — intro holds first, then boards appear
-  const introOut = clamp((prog-0.06)/0.06,0,1);      // intro panel fades/slides out
-  const t12 = clamp((prog-0.16)/0.16,0,1);           // board → cluster
-  const t23 = clamp((prog-0.44)/0.16,0,1);           // cluster → spectrum
-  const t34 = clamp((prog-0.78)/0.15,0,1);           // spectrum → evidence
+  const introOut=clamp((prog-0.04)/0.05,0,1);
+  const t12=clamp((prog-0.12)/0.15,0,1);
+  const t23=clamp((prog-0.40)/0.14,0,1);
+  const t34=clamp((prog-0.64)/0.12,0,1);
+  const t45=clamp((prog-0.86)/0.11,0,1);
 
-  const e12=ease(t12), e23=ease(t23), e34=easeIn(t34);
-  const boardsIn = introOut; // notes/boards fade in as intro leaves
+  const e12=ease(t12),e23=ease(t23),e34=easeIn(t34),e45=ease(t45);
+  const boardsIn=introOut;
 
-  // compute spec positions when entering act 3 the first time / on demand
-  if(t23>0.4 && !pos3) pos3 = computeSpec3();
+  if(t23>0.4&&!pos3)pos3=computeSpec3();
 
-  // animate notes
   NOTES.forEach((n,i)=>{
     const el=noteEls[i];
     let x,y,rot,scale=1,op=1;
-
-    if(e34>0.001 && pos3){
-      // Act 3 → Act 4: notes go from spectrum position up & out (residue)
+    if(e34>0.001&&pos3){
       const p3=pos3[i];
-      const x4 = W*0.02 + ((i*53)%97)/97*W*0.95;
-      const y4 = -40;
-      x=lerp(p3.x,x4,e34); y=lerp(p3.y,y4,e34);
-      rot=lerp(p3.rot,0,e34); scale=lerp(p3.scale||1,0.7,e34);
+      const x4=W*0.01+((i*53)%97)/97*W*0.97,y4=-35;
+      x=lerp(p3.x,x4,e34);y=lerp(p3.y,y4,e34);
+      rot=lerp(p3.rot,0,e34);scale=lerp(p3.scale||1,0.6,e34);
       op=lerp(p3.fade?0:1,0,e34);
-    } else if(e23>0.001 && pos3){
-      // Act 2 → Act 3: cluster → spectrum columns
-      const a=pos2[i], p3=pos3[i];
-      x=lerp(a.x,p3.x,e23); y=lerp(a.y,p3.y,e23);
-      rot=lerp(a.rot,p3.rot,e23); scale=lerp(a.scale||1,p3.scale||1,e23);
+    } else if(e23>0.001&&pos3){
+      const a=pos2[i],p3=pos3[i];
+      x=lerp(a.x,p3.x,e23);y=lerp(a.y,p3.y,e23);
+      rot=lerp(a.rot,p3.rot,e23);scale=lerp(a.scale||1,p3.scale||1,e23);
       op=p3.fade?lerp(1,0,e23):1;
     } else {
-      // Act 1 → Act 2: board → cluster
-      const a=pos1[i], b=pos2[i];
-      x=lerp(a.x,b.x,e12); y=lerp(a.y,b.y,e12);
-      rot=lerp(a.rot,b.rot,e12); scale=lerp(a.scale||1,b.scale||1,e12);
-      op=boardsIn; // fade notes in as the intro clears
+      const a=pos1[i],b2=pos2[i];
+      x=lerp(a.x,b2.x,e12);y=lerp(a.y,b2.y,e12);
+      rot=lerp(a.rot,b2.rot,e12);scale=lerp(a.scale||1,b2.scale||1,e12);
+      op=boardsIn;
     }
     el.style.transform=`translate(${x}px,${y}px) rotate(${rot}deg) scale(${scale})`;
     el.style.opacity=String(op);
   });
 
-  // intro panel: visible until it slides out
-  introPanel.classList.toggle('hide', introOut>0.5);
-
-  // board UI: visible once intro clears, through act 1
-  const showBoard = e12<0.55 && introOut>0.5;
+  introPanel.classList.toggle('hide',introOut>0.5);
+  const showBoard=e12<0.55&&introOut>0.5;
   bh.forEach(h=>h.classList.toggle('hide',!showBoard));
   boxes.forEach(bx=>bx.classList.toggle('hide',!showBoard));
-
-  // bridge banner: during 1→2 transition and early act 2
-  const showBridge = e12>0.4 && e23<0.15;
-  bridge.classList.toggle('vis',showBridge);
-
-  // cluster heads: act 2 settled, before spectrum starts
-  const showClusters = e12>0.85 && e23<0.25;
+  bridge.classList.toggle('vis',e12>0.4&&e23<0.15);
+  const showClusters=e12>0.85&&e23<0.25;
   Object.values(chs).forEach(h=>h.classList.toggle('vis',showClusters));
-
-  // spectrum panel: fades in only once notes are substantially in their columns
-  const showSpec = e23>0.7 && e34<0.5;
-  specPanel.classList.toggle('vis',showSpec);
-
-  // evidence: act 4
-  const inAct4 = e34>0.2;
-  evidence.classList.toggle('vis', inAct4);
+  specPanel.classList.toggle('vis',e23>0.7&&e34<0.5);
+  const inAct4=e34>0.2&&e45<0.5;
+  evidence.classList.toggle('vis',inAct4);
   setOrbitActive(inAct4);
+  const inAct5=e45>0.3;
+  act5.classList.toggle('vis',inAct5);
 
-  // act label + progress
   let act=0;
-  if(e12>0.8 && e23<0.2) act=1;
-  else if(e23>0.7 && e34<0.2) act=2;
-  else if(e34>0.2) act=3;
-  actLabel.textContent = introOut<0.5 ? 'Palo Alto Museum · community board analysis' : ACTS[act];
+  if(e12>0.8&&e23<0.2)act=1;
+  else if(e23>0.7&&e34<0.2)act=2;
+  else if(e34>0.2&&e45<0.3)act=3;
+  else if(e45>0.3)act=4;
+  actLabel.textContent=introOut<0.5?'Palo Alto Museum \u00b7 six boards \u00b7 270 voices':ACTS[act];
   pd.forEach((d,i)=>d.classList.toggle('act',i===act));
-  progress.classList.remove('on-dark');
-  // hide the fixed title block through intro + Act 1 (board headers already
-  // state the context there); show it from Act 2 on as a persistent anchor
-  const hideTitle = introOut<0.5 || e12<0.85;
-  document.getElementById('title-block').classList.toggle('hide', hideTitle);
-  actLabel.style.color = '';
-  sig.style.color = '';
-  ncount.style.color = '';
-
-  // hint: hover prompt appears once boards are in, during act 1 only
-  hint.style.opacity = (introOut>0.6 && e12<0.4)?'1':'0';
+  if(inAct5){progress.classList.add('on-dark');sig.style.color='rgba(255,255,255,0.16)';ncount.style.color='rgba(255,255,255,0.16)';actLabel.style.color='rgba(255,255,255,0.38)';}
+  else{progress.classList.remove('on-dark');sig.style.color='';ncount.style.color='';actLabel.style.color='';}
+  const hideTitle=introOut<0.5||e12<0.85;
+  document.getElementById('title-block').classList.toggle('hide',hideTitle);
+  hint.style.opacity=(introOut>0.6&&e12<0.35)?'1':'0';
 }
 
 window.addEventListener('scroll',onScroll,{passive:true});
 
-// ═══ ACT 4: STATIC POSITIONING MODEL — VERSION B (size = net evidence) ═══════
-// Five stances in a row, each sized by its net evidence score (supports minus
-// strains). Lines to the four findings stay hidden until you hover or focus a
-// stance, so the resting state is calm and the size carries the headline.
-
-// effect matrix: +1 strengthen, -1 weaken, 0 neutral, indexed [finding0..3]
-const POSITIONS = [
-  {
-    key:'celebrate', verb:'Celebrate', color:'#3da838',
-    effects:[-1,-1,-1,+1],
-    statement:'For the resident or visitor who is proud of what Palo Alto built, PAM is the museum that <b>honors the inventions and the founders</b>, and gives them a place in the origin story of the modern world.',
-    strong:[
-      {t:"The working board leans this way already. Heritage and celebration are what most of its members came to build.", s:"From Finding 4"},
-    ],
-    weak:[
-      {t:"Other museums already tell this story. The Tech Museum in San Jose and the Computer History Museum got there first, and they are bigger.", s:"From Finding 1"},
-      {t:"The Briones wall at the front door is about hard history, not celebration. The building itself pulls against this stance.", s:"From Finding 2"},
-      {t:"The Computer History Museum shows the limit: even with the best collection in the world, a celebration museum reads as a museum for tech insiders, not for everyone.", s:"From Finding 3"},
-    ],
-  },
-  {
-    key:'belong', verb:'Belong', color:'#b8820a',
-    effects:[0,0,-1,+1],
-    statement:'For the longtime local, PAM is the museum that <b>keeps the city\u2019s shared memory</b>, and gives them a sense of continuity as the town changes around them.',
-    strong:[
-      {t:"This is the safe, familiar choice, and the board is comfortable with it. It is also the easiest version to fund.", s:"From Finding 4"},
-    ],
-    weak:[
-      {t:"A memory-keeping museum is an archive, not a living place. The research shows a museum needs a sharper point of view than nostalgia to draw people in.", s:"From Finding 3"},
-    ],
-  },
-  {
-    key:'convene', verb:'Convene', color:'#7a5ea8',
-    effects:[0,0,-1,+1],
-    statement:'For the civic-minded resident, PAM is the museum that <b>hosts the town\u2019s live conversation</b>, and gives them a real place to be heard about what matters now.',
-    strong:[
-      {t:"The board can actually do this. It includes four former mayors and a current rail-committee member, so the power to convene the town is already in the room.", s:"From Finding 4"},
-    ],
-    weak:[
-      {t:"A gathering place with no point of view just becomes a room people rent. The research is clear that neutrality does not draw an audience.", s:"From Finding 3"},
-      {t:"A board made up of longtime insiders would struggle to host honest debates about issues its own members have already taken sides on.", s:"From Finding 4"},
-    ],
-  },
-  {
-    key:'excavate', verb:'Excavate', color:'#c0472a',
-    effects:[+1,+1,+1,-1],
-    statement:'For the resident who wants the whole truth about this place, PAM is the museum that <b>brings the buried history into the open</b>, and gives them an honest reckoning that no other museum here offers.',
-    strong:[
-      {t:"People have been asking for this in public for more than ten years. The community boards produced the same demand again, without anyone prompting it.", s:"From Finding 1"},
-      {t:"The Juana Briones wall already puts this history at the front door. It is a claim no other local museum can physically make.", s:"From Finding 2"},
-      {t:"The Oakland Museum shows that committing fully to this kind of honest reckoning changes who comes through the door, and builds real loyalty.", s:"From Finding 3"},
-    ],
-    weak:[
-      {t:"The working board is cautious about it. This is the boldest stance, and the people who would have to commit to it are the ones least inclined to.", s:"From Finding 4"},
-    ],
-  },
-  {
-    key:'witness', verb:'Witness', color:'#3a6e9c',
-    effects:[+1,0,+1,0],
-    statement:'For the visitor who distrusts a polished story, PAM is the museum that <b>shows the unedited picture</b>, and gives them the history with its failures left in.',
-    strong:[
-      {t:"It goes hand in hand with the buried-history stance. The same residents who want the hard truths also want the full, unflattering record.", s:"From Finding 1"},
-      {t:"The research rewards honesty. People already put Theranos on the boards, and crossed out James Franco. They want the real picture, flaws and all.", s:"From Finding 3"},
-    ],
-    weak:[],
-  },
+// ── EVIDENCE LAYER: orbital model ──
+const POSITIONS=[
+  {key:'celebrate',verb:'Celebrate',color:'#3da838',effects:[-1,-1,-1,+1],
+   statement:'For the resident proud of what Palo Alto built, PAM is the museum that <b>honors the inventions and the founders</b>, and gives them a place in the origin story of the modern world.',
+   strong:[{t:"The working board leans this way. Heritage and celebration are what most of its members came to build.",s:"From Finding 4"}],
+   weak:[{t:"Other museums already tell this story. The Tech Museum and CHM got there first, and they are bigger.",s:"From Finding 1"},{t:"The Briones wall at the front door is about hard history, not celebration. The building itself pulls against this stance.",s:"From Finding 2"},{t:"The CHM shows the limit: even with the best collection, a celebration museum reads as a museum for insiders.",s:"From Finding 3"}]},
+  {key:'belong',verb:'Belong',color:'#b8820a',effects:[0,0,-1,+1],
+   statement:'For the longtime local, PAM is the museum that <b>keeps the city\u2019s shared memory</b>, and gives them a sense of continuity as the town changes around them.',
+   strong:[{t:"The familiar choice. The board is comfortable with it. The easiest version to fund.",s:"From Finding 4"}],
+   weak:[{t:"A memory-keeping museum is an archive, not a living place. The research shows a museum needs a sharper point of view than nostalgia.",s:"From Finding 3"}]},
+  {key:'convene',verb:'Convene',color:'#7a5ea8',effects:[0,0,-1,+1],
+   statement:'For the civic-minded resident, PAM is the museum that <b>hosts the town\u2019s live conversation</b>, and gives them a real place to be heard about what matters now.',
+   strong:[{t:"The board includes four former mayors and a rail-committee member. The power to convene is already in the room.",s:"From Finding 4"}],
+   weak:[{t:"A gathering place with no point of view becomes a room people rent. Neutrality does not draw an audience.",s:"From Finding 3"},{t:"Institutions that tried to serve every camp at once stayed invisible to all of them.",s:"From Finding 4"}]},
+  {key:'excavate',verb:'Excavate',color:'#c0472a',effects:[+1,+1,+1,-1],
+   statement:'For the resident who wants the whole truth about this place, PAM is the museum that <b>brings the buried history into the open</b>, and gives them an honest reckoning that no other museum here offers.',
+   strong:[{t:"People have been asking for this in public for more than ten years. The six boards produced the same demand again, without anyone prompting it.",s:"From Finding 1"},{t:"The Juana Briones wall and the original clinic nurses already put this history at the front door.",s:"From Finding 2"},{t:"The Oakland Museum shows that committing fully to honest reckoning changes who comes through the door, and builds real loyalty.",s:"From Finding 3"}],
+   weak:[{t:"This is the boldest stance, and the people who would have to commit to it are the ones who would need to be most convinced.",s:"From Finding 4"}]},
+  {key:'witness',verb:'Witness',color:'#3a6e9c',effects:[+1,0,+1,0],
+   statement:'For the visitor who distrusts a polished story, PAM is the museum that <b>shows the unedited picture</b>, and gives them the history with its failures left in.',
+   strong:[{t:"The same residents who want the hard truths also want the full, unflattering record. The six boards confirm this repeatedly.",s:"From Finding 1"},{t:"People already put Theranos on the boards, crossed out James Franco, and named William Shockley alongside his eugenics. They want the real picture.",s:"From Finding 3"}],
+   weak:[]},
+  {key:'inhabit',verb:'Inhabit',color:'#2a8c7a',effects:[+1,0,+1,0],
+   statement:'For the resident who feels this city as a living ecosystem \u2014 not just a human history \u2014 PAM is the museum that <b>knows Palo Alto as a place, not just a story</b>, and makes that place visible.',
+   strong:[{t:"The Trees board introduced a signal no previous analysis had: a whole cluster of people who want to understand and experience the living city, not only remember it.",s:"From Finding 1"},{t:"The El Palo Alto tree, the Baylands, the urban canopy, the native plants \u2014 these are distinct from heritage. They are a living civic identity that no other institution claims.",s:"From Finding 3"}],
+   weak:[]},
 ];
 
-// finding anchors (corners) and stance anchors (row across the middle)
-const FIELD_POS = [
-  {x:0.30,y:0.40}, {x:0.70,y:0.40}, {x:0.30,y:0.80}, {x:0.70,y:0.80}
-];
-
-const ocanvas = document.getElementById('orbit-canvas');
-const octx = ocanvas.getContext('2d');
-let orbitActive=false, orbitGeo=null, hoverPos=-1, drawnOnce=false;
+const FIELD_POS=[{x:0.28,y:0.38},{x:0.72,y:0.38},{x:0.28,y:0.80},{x:0.72,y:0.80}];
+const ocanvas=document.getElementById('orbit-canvas');
+const octx=ocanvas.getContext('2d');
+let orbitActive=false,orbitGeo=null,hoverPos=-1;
 
 function sizeOrbit(){
   const dpr=window.devicePixelRatio||1;
-  ocanvas.width=W*dpr; ocanvas.height=H*dpr;
-  ocanvas.style.width=W+'px'; ocanvas.style.height=H+'px';
+  ocanvas.width=W*dpr;ocanvas.height=H*dpr;
+  ocanvas.style.width=W+'px';ocanvas.style.height=H+'px';
   octx.setTransform(dpr,0,0,dpr,0,0);
-  // five stance nodes evenly spaced across a centered band
-  const n=POSITIONS.length;
-  const x0=W*0.30, x1=W*0.70, cy=H*0.585;
-  const nodes=POSITIONS.map((p,i)=>({
-    x: x0 + (x1-x0)*(i/(n-1)),
-    y: cy,
-    idx:i,
-  }));
+  const n=POSITIONS.length,x0=W*0.22,x1=W*0.78,cy=H*0.59;
+  const nodes=POSITIONS.map((p,i)=>({x:x0+(x1-x0)*(i/(n-1)),y:cy,idx:i}));
   const fields=FIELD_POS.map(f=>({x:f.x*W,y:f.y*H}));
   orbitGeo={nodes,fields};
 }
 sizeOrbit();
 
-const orbitDots=[]; // hit targets
+const orbitDots=[];
 const FINDING_LABELS=['1','2','3','4'];
 function drawOrbit(){
   octx.clearRect(0,0,W,H);
   const {nodes,fields}=orbitGeo;
-  const baseR=Math.min(W,H)*0.028;
-
-  // persistent finding anchor markers (always visible, in open space)
+  const baseR=Math.min(W,H)*0.025;
   fields.forEach((f,fi)=>{
-    octx.beginPath(); octx.arc(f.x,f.y,7,0,Math.PI*2);
-    octx.fillStyle='var(--bg)'; octx.fillStyle='#F4F1EA';
-    octx.fill();
-    octx.lineWidth=1.5; octx.strokeStyle='rgba(26,26,26,0.4)'; octx.stroke();
+    octx.beginPath();octx.arc(f.x,f.y,7,0,Math.PI*2);
+    octx.fillStyle='#F4F1EA';octx.fill();
+    octx.lineWidth=1.5;octx.strokeStyle='rgba(26,26,26,0.4)';octx.stroke();
     octx.fillStyle='rgba(26,26,26,0.55)';
-    octx.font=`700 ${Math.round(baseR*0.42)}px "DM Mono", monospace`;
-    octx.textAlign='center'; octx.textBaseline='middle';
-    octx.fillText(FINDING_LABELS[fi], f.x, f.y+0.5);
+    octx.font=`700 ${Math.round(baseR*0.44)}px "DM Mono",monospace`;
+    octx.textAlign='center';octx.textBaseline='middle';
+    octx.fillText(FINDING_LABELS[fi],f.x,f.y+0.5);
   });
-
-  // lines: only for the hovered stance (calm resting state)
   if(hoverPos>=0){
     const node=nodes[hoverPos];
     POSITIONS[hoverPos].effects.forEach((e,fi)=>{
-      if(e===0) return;
+      if(e===0)return;
       const f=fields[fi];
-      // stop the line just short of the anchor marker so it never overlaps text
-      const ang=Math.atan2(node.y-f.y, node.x-f.x);
-      const sx=f.x+Math.cos(ang)*9, sy=f.y+Math.sin(ang)*9;
-      const ex=node.x-Math.cos(ang)*0, ey=node.y-Math.sin(ang)*0;
-      octx.beginPath();
-      octx.moveTo(sx,sy);
-      const mx=(sx+ex)/2, my=(sy+ey)/2;
-      octx.quadraticCurveTo(mx,my,ex,ey);
-      octx.strokeStyle = e>0 ? 'rgba(61,168,56,0.65)' : 'rgba(192,71,42,0.6)';
-      octx.lineWidth = Math.abs(e)>0.99?3:1.8;
-      octx.stroke();
-      // recolor the anchor marker to show its pull
-      octx.beginPath(); octx.arc(f.x,f.y,7,0,Math.PI*2);
-      octx.fillStyle = e>0?'#3da838':'#c0472a'; octx.fill();
+      const ang=Math.atan2(node.y-f.y,node.x-f.x);
+      const sx=f.x+Math.cos(ang)*9,sy=f.y+Math.sin(ang)*9;
+      octx.beginPath();octx.moveTo(sx,sy);
+      const mx=(sx+node.x)/2,my=(sy+node.y)/2;
+      octx.quadraticCurveTo(mx,my,node.x,node.y);
+      octx.strokeStyle=e>0?'rgba(61,168,56,0.65)':'rgba(192,71,42,0.6)';
+      octx.lineWidth=Math.abs(e)>0.99?3:1.8;octx.stroke();
+      octx.beginPath();octx.arc(f.x,f.y,7,0,Math.PI*2);
+      octx.fillStyle=e>0?'#3da838':'#c0472a';octx.fill();
       octx.fillStyle='#fff';
-      octx.font=`700 ${Math.round(baseR*0.42)}px "DM Mono", monospace`;
-      octx.textAlign='center'; octx.textBaseline='middle';
-      octx.fillText(FINDING_LABELS[fi], f.x, f.y+0.5);
+      octx.font=`700 ${Math.round(baseR*0.44)}px "DM Mono",monospace`;
+      octx.textAlign='center';octx.textBaseline='middle';
+      octx.fillText(FINDING_LABELS[fi],f.x,f.y+0.5);
     });
   }
-
-  // stance nodes, sized by net score
   orbitDots.length=0;
   POSITIONS.forEach((p,i)=>{
     const node=nodes[i];
     const net=p.effects.reduce((a,b)=>a+b,0);
-    const r=baseR*(1 + net*0.18);          // size encodes net evidence
+    const r=baseR*(1+net*0.18);
     const hovered=(hoverPos===i);
-    const dim = (hoverPos>=0 && !hovered) ? 0.4 : 1;
-
+    const dim=(hoverPos>=0&&!hovered)?0.38:1;
     octx.globalAlpha=dim;
-    if(hovered){
-      octx.beginPath(); octx.arc(node.x,node.y,r+8,0,Math.PI*2);
-      octx.fillStyle='rgba(26,26,26,0.06)'; octx.fill();
-    }
-    octx.beginPath(); octx.arc(node.x,node.y,r,0,Math.PI*2);
-    octx.fillStyle=p.color; octx.fill();
+    if(hovered){octx.beginPath();octx.arc(node.x,node.y,r+8,0,Math.PI*2);octx.fillStyle='rgba(26,26,26,0.06)';octx.fill();}
+    octx.beginPath();octx.arc(node.x,node.y,r,0,Math.PI*2);octx.fillStyle=p.color;octx.fill();
     if(hovered){octx.lineWidth=2.5;octx.strokeStyle='#1a1a1a';octx.stroke();}
-    // label above
     octx.fillStyle='#1a1a1a';
-    octx.font=`italic ${Math.round(baseR*1.05)}px "DM Serif Display", serif`;
-    octx.textAlign='center'; octx.textBaseline='alphabetic';
-    octx.fillText(p.verb, node.x, node.y - r - 12);
-    // net score below
-    octx.font=`700 ${Math.round(baseR*0.46)}px "DM Mono", monospace`;
-    octx.fillStyle = net>0?'#3da838':net<0?'#c0472a':'#999';
+    octx.font=`italic ${Math.round(baseR*1.05)}px "DM Serif Display",serif`;
+    octx.textAlign='center';octx.textBaseline='alphabetic';
+    octx.fillText(p.verb,node.x,node.y-r-10);
+    octx.font=`700 ${Math.round(baseR*0.44)}px "DM Mono",monospace`;
+    octx.fillStyle=net>0?'#3da838':net<0?'#c0472a':'#999';
     octx.textBaseline='top';
-    octx.fillText((net>0?'+':'')+net+' net', node.x, node.y + r + 9);
+    octx.fillText((net>0?'+':'')+net+' net',node.x,node.y+r+8);
     octx.globalAlpha=1;
     orbitDots.push({posIdx:i,x:node.x,y:node.y,r});
   });
 }
 
-function setOrbitActive(on){
-  orbitActive=on;
-  if(on){ if(!orbitGeo)sizeOrbit(); drawOrbit(); }
-}
-
-// hit testing + click → story panel
-function orbitHit(mx,my){
-  for(const d of orbitDots){
-    if(Math.hypot(mx-d.x,my-d.y)<=d.r+8) return d.posIdx;
-  }
-  return -1;
-}
+function setOrbitActive(on){orbitActive=on;if(on){if(!orbitGeo)sizeOrbit();drawOrbit();}}
+function orbitHit(mx,my){for(const d of orbitDots){if(Math.hypot(mx-d.x,my-d.y)<=d.r+8)return d.posIdx;}return -1;}
 ocanvas.addEventListener('mousemove',e=>{
   const rect=ocanvas.getBoundingClientRect();
   const h=orbitHit(e.clientX-rect.left,e.clientY-rect.top);
-  if(h!==hoverPos){ hoverPos=h; if(orbitActive) drawOrbit(); }
-  ocanvas.style.cursor = hoverPos>=0?'pointer':'default';
+  if(h!==hoverPos){hoverPos=h;if(orbitActive)drawOrbit();}
+  ocanvas.style.cursor=hoverPos>=0?'pointer':'default';
 });
 ocanvas.addEventListener('click',e=>{
   const rect=ocanvas.getBoundingClientRect();
   const hit=orbitHit(e.clientX-rect.left,e.clientY-rect.top);
-  if(hit>=0) openStory(hit);
+  if(hit>=0)openStory(hit);
 });
 
 const storyPanel=document.getElementById('story-panel');
@@ -1155,8 +898,8 @@ function openStory(i){
   document.getElementById('story-verb').textContent=p.verb;
   document.getElementById('story-verb').style.color=p.color;
   document.getElementById('story-statement').innerHTML=p.statement;
-  const su=document.getElementById('story-strong'), wu=document.getElementById('story-weak');
-  su.innerHTML=''; wu.innerHTML='';
+  const su=document.getElementById('story-strong'),wu=document.getElementById('story-weak');
+  su.innerHTML='';wu.innerHTML='';
   p.strong.forEach(x=>{const li=document.createElement('li');li.innerHTML=x.t+`<span class="src">${x.s}</span>`;su.appendChild(li);});
   p.weak.forEach(x=>{const li=document.createElement('li');li.innerHTML=x.t+`<span class="src">${x.s}</span>`;wu.appendChild(li);});
   if(p.weak.length===0){const li=document.createElement('li');li.style.color='var(--muted)';li.style.paddingLeft='0';li.textContent='No finding weakens this stance.';wu.appendChild(li);}
@@ -1164,7 +907,6 @@ function openStory(i){
 }
 document.getElementById('story-close').addEventListener('click',()=>storyPanel.classList.remove('vis'));
 storyPanel.addEventListener('click',e=>{if(e.target===storyPanel)storyPanel.classList.remove('vis');});
-
 window.addEventListener('resize',()=>{pos3=null;sizeOrbit();onScroll();});
 onScroll();
 </script>
