@@ -58,7 +58,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);overflow-x:hidden;ove
 #bridge .b-line strong{font-style:normal;color:var(--coral);font-weight:400;}
 
 /* CLUSTER HEADS */
-.cluster-head{position:absolute;pointer-events:none;opacity:0;width:14%;transition:opacity 0.5s ease;z-index:20;}
+.cluster-head{position:absolute;pointer-events:none;opacity:0;width:auto;transition:opacity 0.5s ease;z-index:24;background:rgba(244,241,234,0.86);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);padding:7px 11px 9px;border-radius:4px;box-shadow:0 2px 10px rgba(0,0,0,0.05);}
 .cluster-head.vis{opacity:1;}
 .ch-verb{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;display:block;line-height:0.98;letter-spacing:-0.015em;}
 .ch-sub{font-family:'DM Mono',monospace;font-size:8px;font-weight:500;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-top:6px;display:block;line-height:1.5;}
@@ -66,17 +66,17 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);overflow-x:hidden;ove
 /* SPECTRUM */
 #spectrum-panel{position:absolute;inset:0;z-index:25;opacity:0;pointer-events:none;transition:opacity 0.6s ease;display:flex;flex-direction:column;}
 #spectrum-panel.vis{opacity:1;pointer-events:auto;}
-#spec-intro{text-align:center;padding:70px 40px 14px;flex-shrink:0;}
+#spec-intro{text-align:center;padding:54px 40px 12px;flex-shrink:0;}
 #spec-intro .si-kicker{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.2em;text-transform:uppercase;color:var(--coral);display:block;margin-bottom:8px;}
 #spec-intro .si-line{font-family:'DM Serif Display',serif;font-size:26px;font-weight:400;color:var(--ink);line-height:1.15;letter-spacing:-0.01em;}
 #spec-intro .si-line em{font-style:italic;color:var(--green);}
-#spec-columns{flex:1;display:grid;grid-template-columns:repeat(6,1fr);gap:0;padding:0 16px 24px;min-height:0;}
+#spec-columns{flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:0 16px 14px;min-height:0;}
 .spec-col{position:relative;display:flex;flex-direction:column;align-items:center;border-left:1px dashed var(--faint);padding:0 6px;}
 .spec-col:first-child{border-left:none;}
 .spec-col-head{text-align:center;padding-top:6px;flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:5px;}
 .spec-pip{width:11px;height:11px;border-radius:50%;transition:all 0.4s;}
-.spec-verb{font-family:'DM Serif Display',serif;font-size:21px;font-style:italic;white-space:nowrap;line-height:1;}
-.spec-stance{font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;color:var(--ink);line-height:1.3;text-align:center;max-width:130px;padding:0 3px;}
+.spec-verb{font-family:'DM Serif Display',serif;font-size:23px;font-style:italic;white-space:nowrap;line-height:1;}
+.spec-stance{font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;color:var(--ink);line-height:1.3;text-align:center;max-width:150px;padding:0 3px;}
 .spec-density{font-family:'DM Mono',monospace;font-size:8px;font-weight:700;letter-spacing:0.13em;text-transform:uppercase;}
 .spec-context{font-family:'DM Mono',monospace;font-size:7.5px;letter-spacing:0.05em;text-transform:uppercase;color:var(--muted);text-align:center;line-height:1.5;}
 .spec-col.dense .spec-pip{background:#c8c3b8;border:2px solid #a8a398;}
@@ -88,10 +88,10 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);overflow-x:hidden;ove
 .spec-col.open .spec-pip{background:var(--green);border:2px solid var(--green);box-shadow:0 0 0 5px rgba(61,168,56,0.16);}
 .spec-col.open .spec-verb{color:var(--green);}
 .spec-col.open .spec-density{color:var(--green);}
-.spec-col.new-open .spec-pip{background:var(--teal);border:2px solid var(--teal);box-shadow:0 0 0 5px rgba(42,140,122,0.16);}
-.spec-col.new-open .spec-verb{color:var(--teal);}
-.spec-col.new-open .spec-density{color:var(--teal);}
 .spec-notes{position:relative;flex:1;width:100%;margin-top:10px;border-top:1px solid var(--faint);padding-top:8px;}
+#spec-note{flex-shrink:0;text-align:center;padding:12px 40px 18px;background:var(--bg);position:relative;z-index:6;border-top:1px solid var(--faint);box-shadow:0 -10px 16px var(--bg);}
+#spec-note .sn-k{font-family:'DM Mono',monospace;font-size:8px;font-weight:700;letter-spacing:0.16em;text-transform:uppercase;color:var(--coral);}
+#spec-note p{font-family:'DM Sans',sans-serif;font-size:11px;color:#5f5b54;line-height:1.55;max-width:720px;margin:5px auto 0;}
 
 /* EVIDENCE */
 #evidence-layer{position:absolute;inset:0;background:var(--bg);opacity:0;pointer-events:none;transition:opacity 0.8s ease;z-index:50;}
@@ -112,8 +112,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);overflow-x:hidden;ove
 .a5-kicker{font-family:'DM Mono',monospace;font-size:10px;font-weight:500;letter-spacing:0.22em;text-transform:uppercase;color:var(--green);display:block;margin-bottom:28px;}
 .a5-line{font-family:'DM Serif Display',serif;font-weight:400;font-size:clamp(24px,3.5vw,48px);color:#fff;line-height:1.18;letter-spacing:-0.015em;max-width:820px;display:block;margin-bottom:16px;}
 .a5-line em{font-style:italic;color:var(--green);}
-.a5-sub{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:400;color:rgba(255,255,255,0.5);line-height:1.65;max-width:520px;display:block;margin-top:14px;}
-.a5-sig{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.2);display:block;margin-top:56px;}
+.a5-sub{font-family:'DM Sans',sans-serif;font-size:14px;font-weight:400;color:rgba(255,255,255,0.5);line-height:1.65;max-width:560px;display:block;margin-top:14px;}
+.a5-sig{font-family:'DM Mono',monospace;font-size:9px;font-weight:500;letter-spacing:0.18em;text-transform:uppercase;color:rgba(255,255,255,0.2);display:block;margin-top:48px;}
 
 /* STORY PANEL */
 #story-panel{position:absolute;inset:0;z-index:70;background:rgba(244,241,234,0.97);opacity:0;pointer-events:none;transition:opacity 0.35s ease;display:flex;flex-direction:column;justify-content:center;padding:5vh 8vw;}
@@ -165,7 +165,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);overflow-x:hidden;ove
       <div id="intro-panel">
         <span class="ip-kicker">Palo Alto Museum · community board analysis</span>
         <h1 class="ip-title">At two community events, the museum put up six boards and asked six questions. Around 270 people answered on sticky notes.</h1>
-        <p class="ip-sub">This walks through what people wrote, sorts it into the desires underneath, and asks what each desire would mean if the museum built itself around it.</p>
+        <p class="ip-sub">This walks through what people wrote, sorts it by what they want the museum to do, and asks which of those the museum could build itself around.</p>
         <span class="ip-scroll">scroll to begin ↓</span>
       </div>
 
@@ -196,7 +196,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);overflow-x:hidden;ove
       <div class="board-header" id="bh3" style="left:1.5%;top:43%;">
         <span class="bh-label">Board 4 · The Life of Trees</span>
         <span class="bh-q">Add your ideas for interactive nature experiences for this exhibition.</span>
-        <span class="bh-summary">The only board that looks forward, not backward. Tree walks, Baylands, native plants, climate questions. Also: the loudest demand in the entire dataset — a new plaque for the Historic Dawn Redwood. In all caps.</span>
+        <span class="bh-summary">The board that asked about nature, and got nature back. Tree walks, Baylands, native plants. Almost all of it lives on this one board, which is the tell: it is mostly the question talking.</span>
       </div>
       <div class="board-header" id="bh4" style="left:35.5%;top:43%;">
         <span class="bh-label">Board 5 · Imagine a World Without Palo Alto</span>
@@ -211,57 +211,51 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);overflow-x:hidden;ove
 
       <!-- Bridge banner -->
       <div id="bridge">
-        <span class="b-line">We asked <strong>six questions.</strong> Palo Alto answered with <strong>seven desires.</strong> Sort the same notes by what they ask the museum to <em>do</em>, and the boards fall into seven verbs.</span>
+        <span class="b-line">People wrote <strong>nouns</strong>: names, places, events. Sort them by what they ask the museum to <em>do</em>, and <strong>four verbs</strong> appear.</span>
       </div>
 
-      <!-- Cluster headers — seven clusters in a shifted grid -->
-      <div class="cluster-head" id="ch-celebrate" style="left:1%;top:18%;"><span class="ch-verb" style="color:#3da838;">Celebrate</span><span class="ch-sub">honor what<br>was built here</span></div>
-      <div class="cluster-head" id="ch-excavate" style="left:50%;top:18%;"><span class="ch-verb" style="color:#c0472a;">Excavate</span><span class="ch-sub">surface what was<br>buried or erased</span></div>
-      <div class="cluster-head" id="ch-belong" style="left:1%;top:46%;"><span class="ch-verb" style="color:#b8820a;">Belong</span><span class="ch-sub">claim a place<br>in the story</span></div>
-      <div class="cluster-head" id="ch-witness" style="left:50%;top:46%;"><span class="ch-verb" style="color:#3a6e9c;">Witness</span><span class="ch-sub">see the whole<br>picture</span></div>
-      <div class="cluster-head" id="ch-convene" style="left:1%;top:73%;"><span class="ch-verb" style="color:#7a5ea8;">Convene</span><span class="ch-sub">gather around<br>what matters now</span></div>
-      <div class="cluster-head" id="ch-inhabit" style="left:50%;top:73%;"><span class="ch-verb" style="color:#2a8c7a;">Inhabit</span><span class="ch-sub">know this city<br>as a living place</span></div>
-      <div class="cluster-head" id="ch-wish" style="left:1%;top:90%;"><span class="ch-verb" style="color:#888880;">Wish</span><span class="ch-sub">imagine what<br>could exist</span></div>
+      <!-- Cluster headers — four verbs + one set-aside -->
+      <div class="cluster-head" id="ch-excavate" style="left:4%;top:19%;"><span class="ch-verb" style="color:#c0472a;">Excavate</span><span class="ch-sub">surface the hard history<br>the proud story leaves out</span></div>
+      <div class="cluster-head" id="ch-belong" style="left:53%;top:17%;"><span class="ch-verb" style="color:#b8820a;">Belong</span><span class="ch-sub">keep the town's<br>shared memory</span></div>
+      <div class="cluster-head" id="ch-celebrate" style="left:53%;top:45%;"><span class="ch-verb" style="color:#3da838;">Celebrate</span><span class="ch-sub">honor what was built<br>and who built it</span></div>
+      <div class="cluster-head" id="ch-convene" style="left:4%;top:60%;"><span class="ch-verb" style="color:#7a5ea8;">Convene</span><span class="ch-sub">host the live<br>conversation</span></div>
+      <div class="cluster-head" id="ch-inhabit" style="left:53%;top:73%;width:38%;"><span class="ch-verb" style="color:#a8a398;font-size:20px;">Inhabit · set aside</span><span class="ch-sub">real demand, but programming, not a position. Almost all of it came from the one board that asked about nature.</span></div>
 
-      <!-- Spectrum panel — six columns (Wish dropped, Inhabit added) -->
+      <!-- Spectrum panel — four columns -->
       <div id="spectrum-panel">
         <div id="spec-intro">
-          <span class="si-kicker">The positioning range</span>
-          <span class="si-line">Each cluster is also a stance the museum could take.<br><em>Two are crowded. One is contested. Three are wide open.</em></span>
+          <span class="si-kicker">From subjects to positions</span>
+          <span class="si-line">Four things people want the museum to <em>do</em>.<br>One signal holds across every board.</span>
         </div>
         <div id="spec-columns">
-          <div class="spec-col dense" data-cl="celebrate">
-            <div class="spec-col-head"><div class="spec-pip"></div><div class="spec-verb">Celebrate</div><div class="spec-stance">Honor what Palo Alto built</div><div class="spec-density">Crowded</div><div class="spec-context">Tech museums<br>already do this</div></div>
-            <div class="spec-notes" id="sn-celebrate"></div>
-          </div>
-          <div class="spec-col dense" data-cl="belong">
-            <div class="spec-col-head"><div class="spec-pip"></div><div class="spec-verb">Belong</div><div class="spec-stance">Keep the city's shared memory</div><div class="spec-density">Crowded</div><div class="spec-context">Local archives<br>already do this</div></div>
-            <div class="spec-notes" id="sn-belong"></div>
-          </div>
-          <div class="spec-col contested" data-cl="convene">
-            <div class="spec-col-head"><div class="spec-pip"></div><div class="spec-verb">Convene</div><div class="spec-stance">Host the town's live conversation</div><div class="spec-density">Contested</div><div class="spec-context">Could slip into<br>a rental venue</div></div>
-            <div class="spec-notes" id="sn-convene"></div>
-          </div>
           <div class="spec-col open" data-cl="excavate">
-            <div class="spec-col-head"><div class="spec-pip"></div><div class="spec-verb">Excavate</div><div class="spec-stance">Bring the buried history into the open</div><div class="spec-density">Wide open</div><div class="spec-context">Biggest cluster.<br>No one holds it.</div></div>
+            <div class="spec-col-head"><div class="spec-pip"></div><div class="spec-verb">Excavate</div><div class="spec-stance">Bring the buried history into the open</div><div class="spec-density">Strongest signal</div><div class="spec-context">Showed up on five<br>of six boards, unasked</div></div>
             <div class="spec-notes" id="sn-excavate"></div>
           </div>
-          <div class="spec-col open" data-cl="witness">
-            <div class="spec-col-head"><div class="spec-pip"></div><div class="spec-verb">Witness</div><div class="spec-stance">Show the unedited picture</div><div class="spec-density">Wide open</div><div class="spec-context">Goes hand in hand<br>with Excavate</div></div>
-            <div class="spec-notes" id="sn-witness"></div>
+          <div class="spec-col dense" data-cl="belong">
+            <div class="spec-col-head"><div class="spec-pip"></div><div class="spec-verb">Belong</div><div class="spec-stance">Keep the city's shared memory</div><div class="spec-density">High demand, crowded</div><div class="spec-context">Local archives<br>already do this</div></div>
+            <div class="spec-notes" id="sn-belong"></div>
           </div>
-          <div class="spec-col new-open" data-cl="inhabit">
-            <div class="spec-col-head"><div class="spec-pip"></div><div class="spec-verb">Inhabit</div><div class="spec-stance">Know this city as a living ecosystem</div><div class="spec-density">Wide open</div><div class="spec-context">New signal from<br>the Trees board</div></div>
-            <div class="spec-notes" id="sn-inhabit"></div>
+          <div class="spec-col dense" data-cl="celebrate">
+            <div class="spec-col-head"><div class="spec-pip"></div><div class="spec-verb">Celebrate</div><div class="spec-stance">Honor what Palo Alto built</div><div class="spec-density">Inflated, crowded</div><div class="spec-context">Tech museums<br>already do this</div></div>
+            <div class="spec-notes" id="sn-celebrate"></div>
           </div>
+          <div class="spec-col contested" data-cl="convene">
+            <div class="spec-col-head"><div class="spec-pip"></div><div class="spec-verb">Convene</div><div class="spec-stance">Host the town's live conversation</div><div class="spec-density">Thin, prompt-driven</div><div class="spec-context">Most of it came from<br>one board's question</div></div>
+            <div class="spec-notes" id="sn-convene"></div>
+          </div>
+        </div>
+        <div id="spec-note">
+          <span class="sn-k">How to read this</span>
+          <p>Each board asked a question, and questions shape answers. The tree board produced trees, so size can be an echo of the prompt. The test is persistence: a theme that appears only where it was asked is mostly artifact; one that appears where it was not asked is real. Buried history passed. The tree cluster did not. These boards show what people want, not what they will attend, and they lean toward the already engaged. Interviews test both.</p>
         </div>
       </div>
 
       <!-- Evidence layer -->
       <div id="evidence-layer">
         <div id="ev-top">
-          <span class="eh-kicker">Act 4 · The six stances, tested against the research</span>
-          <h2>Each stance is sized by how much the research supports it. Hover to see which findings pull for it or against it. Click for the full case.</h2>
+          <span class="eh-kicker">The four positions, tested against the research</span>
+          <h2>Each position is sized by how much the research supports it. Hover to see what pulls for it or against it. Click for the full case.</h2>
           <p class="eh-hint">Size = net supports minus strains · green pulls for · red pulls against</p>
         </div>
         <canvas id="orbit-canvas"></canvas>
@@ -291,9 +285,9 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);overflow-x:hidden;ove
       <!-- Act 5: close -->
       <div id="act5">
         <span class="a5-kicker">Palo Alto Museum · what the boards say</span>
-        <span class="a5-line">The research points<br><em>somewhere.</em></span>
-        <span class="a5-line" style="font-size:clamp(15px,1.9vw,26px);color:rgba(255,255,255,0.62);margin-top:0;">Whether PAM goes there is a conversation worth having<br>before the doors open.</span>
-        <span class="a5-sub">This is a working document, not a conclusion. It is built from six community boards, a decade of public comment, the Roth Building's own history, and a study of eighteen comparable institutions. The positioning is still to be made — with the community, with donors, with the board, and with the town.</span>
+        <span class="a5-line">The strongest signal is the<br><em>buried history.</em></span>
+        <span class="a5-line" style="font-size:clamp(15px,1.9vw,26px);color:rgba(255,255,255,0.62);margin-top:0;">The open question is how far to take it: surface what was hidden,<br>or take a position on it.</span>
+        <span class="a5-sub">Of the four verbs, the buried history is the one no prompt manufactured, on five of six boards. The live question for the room is whether the museum stops at surfacing or goes further and reckons. Built from six community boards, a decade of public comment, the Roth Building's own history, and a study of eighteen comparable institutions. A hypothesis the interviews test, not a verdict. The positioning is still to be made, with the community, the donors, the board, and the town.</span>
         <span class="a5-sig">Prepared by Milo Chao · 100% Human LLC · Palo Alto Museum brand strategy engagement</span>
       </div>
 
@@ -312,8 +306,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);overflow-x:hidden;ove
 </div>
 
 <div id="tooltip"><div class="tt-inner"><div class="tt-name" id="tt-name"></div><div class="tt-what" id="tt-what"></div><div class="tt-why" id="tt-why"></div><span class="tt-cluster" id="tt-cluster"></span></div></div>
-<div id="title-block"><h1>What Palo Alto said<br><em>and what it could mean</em></h1><p>Palo Alto Museum · six boards · 270 voices</p></div>
-<div id="act-label">Act 1 of 5 — The boards as found</div>
+<div id="title-block"><h1>What Palo Alto said<br><em>and what it could mean</em></h1><p>Palo Alto Museum · six boards · the verbs underneath</p></div>
+<div id="act-label">Act 1 of 5 — Six boards as found</div>
 <div id="hint">hover any note to read it · scroll to continue ↓</div>
 <div id="progress">
   <div class="prog-dot act" id="pd0"></div>
@@ -577,7 +571,13 @@ const NOTES=[
 {t:"Lincoln Williams \u2014 Winter Club",b:5,cl:"belong",info:{what:"A civic leader associated with the Winter Club",why:"The Winter Club was a Palo Alto institution."}},
 ];
 
-const CL_COLORS={celebrate:'#3da838',excavate:'#c0472a',belong:'#b8820a',witness:'#3a6e9c',convene:'#7a5ea8',inhabit:'#2a8c7a',wish:'#888880'};
+// Re-derivation: Witness folds into Excavate (one posture, tell the hard truth the myth leaves out).
+NOTES.forEach(n=>{ if(n.cl==='witness') n.cl='excavate'; });
+
+// Four positioning verbs; inhabit + wish are set aside (not positions).
+const VERBS=['excavate','belong','celebrate','convene'];
+const SETASIDE=['inhabit','wish'];
+const CL_COLORS={celebrate:'#3da838',excavate:'#c0472a',belong:'#b8820a',convene:'#7a5ea8',inhabit:'#2a8c7a',wish:'#888880'};
 const W=window.innerWidth,H=window.innerHeight,NW=130;
 
 function rng(seed){let s=seed%2147483647;if(s<=0)s+=2147483646;return()=>{s=s*16807%2147483647;return(s-1)/2147483646;};}
@@ -587,7 +587,7 @@ function placeInRect(items,rect,seedBase){
   const maxC=Math.max(2,Math.floor(rect.w/(NW*0.7)));
   const cols=Math.min(maxC,Math.ceil(Math.sqrt(n*1.6)));
   const pitch=rect.h/Math.ceil(n/cols);
-  const scale=Math.min(1,Math.max(0.65,pitch/32));
+  const scale=Math.min(1,Math.max(0.6,pitch/32));
   const cellW=rect.w/cols;
   return items.map((it,i)=>{
     const cx=i%cols,cy=Math.floor(i/cols);
@@ -605,19 +605,18 @@ const BOARD_RECTS=[
   {x:W*0.69,y:H*0.58,w:W*0.29,h:H*0.25},
 ];
 
-// Seven cluster rects
+// Cluster rects: four verbs prominent, two set-aside zones muted at the foot
 const CLUSTER_RECTS={
-  celebrate:{x:W*0.13,y:H*0.16,w:W*0.33,h:H*0.19},
-  excavate: {x:W*0.55,y:H*0.16,w:W*0.42,h:H*0.19},
-  belong:   {x:W*0.13,y:H*0.43,w:W*0.33,h:H*0.17},
-  witness:  {x:W*0.55,y:H*0.43,w:W*0.42,h:H*0.17},
-  convene:  {x:W*0.13,y:H*0.68,w:W*0.33,h:H*0.16},
-  inhabit:  {x:W*0.55,y:H*0.68,w:W*0.42,h:H*0.16},
-  wish:     {x:W*0.13,y:H*0.88,w:W*0.74,h:H*0.09},
+  excavate: {x:W*0.04,y:H*0.155,w:W*0.42,h:H*0.34},
+  belong:   {x:W*0.53,y:H*0.135,w:W*0.44,h:H*0.255},
+  celebrate:{x:W*0.53,y:H*0.43,w:W*0.44,h:H*0.235},
+  convene:  {x:W*0.04,y:H*0.555,w:W*0.42,h:H*0.135},
+  inhabit:  {x:W*0.30,y:H*0.85,w:W*0.34,h:H*0.10},
+  wish:     {x:W*0.67,y:H*0.85,w:W*0.20,h:H*0.10},
 };
 
 const byBoard=[[],[],[],[],[],[]];
-const byCluster={celebrate:[],excavate:[],belong:[],witness:[],convene:[],inhabit:[],wish:[]};
+const byCluster={excavate:[],belong:[],celebrate:[],convene:[],inhabit:[],wish:[]};
 NOTES.forEach((n,i)=>{byBoard[n.b].push(i);byCluster[n.cl].push(i);});
 
 const pos1=new Array(NOTES.length);
@@ -636,40 +635,44 @@ const canvas=document.getElementById('canvas');
 const noteEls=NOTES.map((n,i)=>{
   const el=document.createElement('div');
   el.className=`note ${n.cl}`;
-  el.textContent=n.t;
   el.style.transform=`translate(${pos1[i].x}px,${pos1[i].y}px) rotate(${pos1[i].rot}deg) scale(${pos1[i].scale||1})`;
   el.style.zIndex=10+(i%12);
+  el.textContent=n.t;
   canvas.appendChild(el);
   return el;
 });
 document.getElementById('note-count').textContent=NOTES.length+' voices';
 
-// Spectrum order — 6 columns, no Wish
-const SPEC_ORDER=['celebrate','belong','convene','excavate','witness','inhabit'];
+// Spectrum order — four verbs
+const SPEC_ORDER=['excavate','belong','celebrate','convene'];
 function computeSpec3(){
   const pos3=new Array(NOTES.length);
   SPEC_ORDER.forEach(cl=>{
     const zone=document.getElementById('sn-'+cl);
     const rect=zone.getBoundingClientRect();
     const idxs=byCluster[cl];
-    const rowH=18;
+    const rowH=Math.max(13,Math.min(18,(rect.height-6)/Math.max(1,idxs.length)));
     idxs.forEach((idx,k)=>{
       const r=rng(idx*53+7);
-      pos3[idx]={x:rect.left+(rect.width-NW*0.62)/2+(r()-0.5)*6,y:rect.top+k*rowH+(r()-0.5)*2,rot:(r()-0.5)*2,scale:0.62};
+      pos3[idx]={x:rect.left+(rect.width-NW*0.58)/2+(r()-0.5)*6,y:rect.top+k*rowH+(r()-0.5)*2,rot:(r()-0.5)*2,scale:0.58};
     });
   });
-  byCluster.wish.forEach((idx,k)=>{pos3[idx]={x:W*0.5+(k-2)*50,y:H+80,rot:0,scale:0.6,fade:true};});
+  // Set-aside clusters fade away — they are not positions
+  SETASIDE.forEach(cl=>{
+    byCluster[cl].forEach((idx,k)=>{pos3[idx]={x:W*0.5+((k%8)-4)*46,y:H+90,rot:0,scale:0.55,fade:true};});
+  });
   return pos3;
 }
 let pos3=null;
 
 const tooltip=document.getElementById('tooltip');
 const ttName=document.getElementById('tt-name'),ttWhat=document.getElementById('tt-what'),ttWhy=document.getElementById('tt-why'),ttCluster=document.getElementById('tt-cluster');
+const CL_LABEL={excavate:'excavate',belong:'belong',celebrate:'celebrate',convene:'convene',inhabit:'inhabit · set aside',wish:'wish · set aside'};
 noteEls.forEach((el,i)=>{
   const n=NOTES[i];
   el.addEventListener('mouseenter',e=>{
     ttName.textContent=n.t;ttWhat.textContent=n.info.what;ttWhy.textContent=n.info.why;
-    ttCluster.textContent=n.cl;ttCluster.style.background=CL_COLORS[n.cl]+'22';ttCluster.style.color=CL_COLORS[n.cl];
+    ttCluster.textContent=CL_LABEL[n.cl];ttCluster.style.background=CL_COLORS[n.cl]+'22';ttCluster.style.color=CL_COLORS[n.cl];
     tooltip.classList.add('vis');posTip(e.clientX,e.clientY);
   });
   el.addEventListener('mousemove',e=>posTip(e.clientX,e.clientY));
@@ -686,7 +689,7 @@ const introPanel=document.getElementById('intro-panel');
 const bh=[0,1,2,3,4,5].map(i=>document.getElementById('bh'+i));
 const boxes=[0,1,2,3,4,5].map(i=>document.getElementById('box'+i));
 const bridge=document.getElementById('bridge');
-const chs={celebrate:document.getElementById('ch-celebrate'),excavate:document.getElementById('ch-excavate'),belong:document.getElementById('ch-belong'),witness:document.getElementById('ch-witness'),convene:document.getElementById('ch-convene'),inhabit:document.getElementById('ch-inhabit'),wish:document.getElementById('ch-wish')};
+const chs={excavate:document.getElementById('ch-excavate'),belong:document.getElementById('ch-belong'),celebrate:document.getElementById('ch-celebrate'),convene:document.getElementById('ch-convene'),inhabit:document.getElementById('ch-inhabit')};
 const specPanel=document.getElementById('spectrum-panel');
 const evidence=document.getElementById('evidence-layer');
 const act5=document.getElementById('act5');
@@ -698,9 +701,9 @@ const sig=document.getElementById('pam-sig'),ncount=document.getElementById('not
 
 const ACTS=[
   'Act 1 of 5 \u2014 Six boards as found',
-  'Act 2 of 5 \u2014 Seven desires emerge',
-  'Act 3 of 5 \u2014 The positioning range',
-  'Act 4 of 5 \u2014 What the research says underneath',
+  'Act 2 of 5 \u2014 From nouns to verbs',
+  'Act 3 of 5 \u2014 The four positions',
+  'Act 4 of 5 \u2014 Tested against the research',
   'Act 5 of 5 \u2014 Where this points',
 ];
 
@@ -739,6 +742,8 @@ function onScroll(){
       x=lerp(a.x,b2.x,e12);y=lerp(a.y,b2.y,e12);
       rot=lerp(a.rot,b2.rot,e12);scale=lerp(a.scale||1,b2.scale||1,e12);
       op=boardsIn;
+      // Set-aside clusters dim once grouped, signalling they are parked
+      if(SETASIDE.includes(n.cl)) op=boardsIn*(1-0.55*e12);
     }
     el.style.transform=`translate(${x}px,${y}px) rotate(${rot}deg) scale(${scale})`;
     el.style.opacity=String(op);
@@ -763,7 +768,7 @@ function onScroll(){
   else if(e23>0.7&&e34<0.2)act=2;
   else if(e34>0.2&&e45<0.3)act=3;
   else if(e45>0.3)act=4;
-  actLabel.textContent=introOut<0.5?'Palo Alto Museum \u00b7 six boards \u00b7 270 voices':ACTS[act];
+  actLabel.textContent=introOut<0.5?'Palo Alto Museum \u00b7 six boards \u00b7 the verbs underneath':ACTS[act];
   pd.forEach((d,i)=>d.classList.toggle('act',i===act));
   if(inAct5){progress.classList.add('on-dark');sig.style.color='rgba(255,255,255,0.16)';ncount.style.color='rgba(255,255,255,0.16)';actLabel.style.color='rgba(255,255,255,0.38)';}
   else{progress.classList.remove('on-dark');sig.style.color='';ncount.style.color='';actLabel.style.color='';}
@@ -774,32 +779,24 @@ function onScroll(){
 
 window.addEventListener('scroll',onScroll,{passive:true});
 
-// ── EVIDENCE LAYER: orbital model ──
+// ── EVIDENCE LAYER: orbital model (four positions) ──
 const POSITIONS=[
+  {key:'excavate',verb:'Excavate',color:'#c0472a',effects:[+1,+1,+1,-1],
+   statement:'For the resident who wants the whole truth about this place, PAM is the museum that <b>brings the buried history into the open</b>, and gives them an honest reckoning that no other museum here offers.',
+   strong:[{t:"People have asked for this in public for more than ten years, and the six boards produced the same demand again, on five of six, with nothing prompting it.",s:"From Finding 1"},{t:"The Juana Briones wall and the original clinic nurses already put this history at the front door.",s:"From Finding 2"},{t:"The Oakland Museum shows that committing fully to honest reckoning changes who comes through the door, and builds real loyalty.",s:"From Finding 3"}],
+   weak:[{t:"This is the boldest stance, and the people who would have to commit to it are the ones who would need to be most convinced.",s:"From Finding 4"}]},
+  {key:'belong',verb:'Belong',color:'#b8820a',effects:[0,0,-1,+1],
+   statement:'For the longtime local, PAM is the museum that <b>keeps the city\u2019s shared memory</b>, and gives them a sense of continuity as the town changes around them.',
+   strong:[{t:"High, consistent demand across the boards. Real, and the easiest version to fund.",s:"From Finding 1"}],
+   weak:[{t:"A memory-keeping museum is an archive, and the local archives already hold this. The research shows a museum needs a sharper point of view than nostalgia.",s:"From Finding 3"}]},
   {key:'celebrate',verb:'Celebrate',color:'#3da838',effects:[-1,-1,-1,+1],
    statement:'For the resident proud of what Palo Alto built, PAM is the museum that <b>honors the inventions and the founders</b>, and gives them a place in the origin story of the modern world.',
    strong:[{t:"The working board leans this way. Heritage and celebration are what most of its members came to build.",s:"From Finding 4"}],
-   weak:[{t:"Other museums already tell this story. The Tech Museum and CHM got there first, and they are bigger.",s:"From Finding 1"},{t:"The Briones wall at the front door is about hard history, not celebration. The building itself pulls against this stance.",s:"From Finding 2"},{t:"The CHM shows the limit: even with the best collection, a celebration museum reads as a museum for insiders.",s:"From Finding 3"}]},
-  {key:'belong',verb:'Belong',color:'#b8820a',effects:[0,0,-1,+1],
-   statement:'For the longtime local, PAM is the museum that <b>keeps the city\u2019s shared memory</b>, and gives them a sense of continuity as the town changes around them.',
-   strong:[{t:"The familiar choice. The board is comfortable with it. The easiest version to fund.",s:"From Finding 4"}],
-   weak:[{t:"A memory-keeping museum is an archive, not a living place. The research shows a museum needs a sharper point of view than nostalgia.",s:"From Finding 3"}]},
+   weak:[{t:"Other museums already tell this story. The Tech Museum and CHM got there first, and they are bigger.",s:"From Finding 1"},{t:"The Briones wall at the front door is about hard history, not celebration. The building pulls against this stance.",s:"From Finding 2"},{t:"Its size on the boards is inflated by prompts asking for big names. Counted off-prompt, the demand is thin.",s:"From Finding 1"}]},
   {key:'convene',verb:'Convene',color:'#7a5ea8',effects:[0,0,-1,+1],
    statement:'For the civic-minded resident, PAM is the museum that <b>hosts the town\u2019s live conversation</b>, and gives them a real place to be heard about what matters now.',
    strong:[{t:"The board includes four former mayors and a rail-committee member. The power to convene is already in the room.",s:"From Finding 4"}],
-   weak:[{t:"A gathering place with no point of view becomes a room people rent. Neutrality does not draw an audience.",s:"From Finding 3"},{t:"Institutions that tried to serve every camp at once stayed invisible to all of them.",s:"From Finding 4"}]},
-  {key:'excavate',verb:'Excavate',color:'#c0472a',effects:[+1,+1,+1,-1],
-   statement:'For the resident who wants the whole truth about this place, PAM is the museum that <b>brings the buried history into the open</b>, and gives them an honest reckoning that no other museum here offers.',
-   strong:[{t:"People have been asking for this in public for more than ten years. The six boards produced the same demand again, without anyone prompting it.",s:"From Finding 1"},{t:"The Juana Briones wall and the original clinic nurses already put this history at the front door.",s:"From Finding 2"},{t:"The Oakland Museum shows that committing fully to honest reckoning changes who comes through the door, and builds real loyalty.",s:"From Finding 3"}],
-   weak:[{t:"This is the boldest stance, and the people who would have to commit to it are the ones who would need to be most convinced.",s:"From Finding 4"}]},
-  {key:'witness',verb:'Witness',color:'#3a6e9c',effects:[+1,0,+1,0],
-   statement:'For the visitor who distrusts a polished story, PAM is the museum that <b>shows the unedited picture</b>, and gives them the history with its failures left in.',
-   strong:[{t:"The same residents who want the hard truths also want the full, unflattering record. The six boards confirm this repeatedly.",s:"From Finding 1"},{t:"People already put Theranos on the boards, crossed out James Franco, and named William Shockley alongside his eugenics. They want the real picture.",s:"From Finding 3"}],
-   weak:[]},
-  {key:'inhabit',verb:'Inhabit',color:'#2a8c7a',effects:[+1,0,+1,0],
-   statement:'For the resident who feels this city as a living ecosystem \u2014 not just a human history \u2014 PAM is the museum that <b>knows Palo Alto as a place, not just a story</b>, and makes that place visible.',
-   strong:[{t:"The Trees board introduced a signal no previous analysis had: a whole cluster of people who want to understand and experience the living city, not only remember it.",s:"From Finding 1"},{t:"The El Palo Alto tree, the Baylands, the urban canopy, the native plants \u2014 these are distinct from heritage. They are a living civic identity that no other institution claims.",s:"From Finding 3"}],
-   weak:[]},
+   weak:[{t:"A gathering place with no point of view becomes a room people rent. Neutrality does not draw an audience.",s:"From Finding 3"},{t:"Most of the demand came from a single board that asked people to name speakers. Off that prompt, it nearly disappears.",s:"From Finding 1"}]},
 ];
 
 const FIELD_POS=[{x:0.28,y:0.38},{x:0.72,y:0.38},{x:0.28,y:0.80},{x:0.72,y:0.80}];
@@ -812,7 +809,7 @@ function sizeOrbit(){
   ocanvas.width=W*dpr;ocanvas.height=H*dpr;
   ocanvas.style.width=W+'px';ocanvas.style.height=H+'px';
   octx.setTransform(dpr,0,0,dpr,0,0);
-  const n=POSITIONS.length,x0=W*0.22,x1=W*0.78,cy=H*0.59;
+  const n=POSITIONS.length,x0=W*0.26,x1=W*0.74,cy=H*0.59;
   const nodes=POSITIONS.map((p,i)=>({x:x0+(x1-x0)*(i/(n-1)),y:cy,idx:i}));
   const fields=FIELD_POS.map(f=>({x:f.x*W,y:f.y*H}));
   orbitGeo={nodes,fields};
@@ -824,7 +821,7 @@ const FINDING_LABELS=['1','2','3','4'];
 function drawOrbit(){
   octx.clearRect(0,0,W,H);
   const {nodes,fields}=orbitGeo;
-  const baseR=Math.min(W,H)*0.025;
+  const baseR=Math.min(W,H)*0.028;
   fields.forEach((f,fi)=>{
     octx.beginPath();octx.arc(f.x,f.y,7,0,Math.PI*2);
     octx.fillStyle='#F4F1EA';octx.fill();
@@ -858,7 +855,7 @@ function drawOrbit(){
   POSITIONS.forEach((p,i)=>{
     const node=nodes[i];
     const net=p.effects.reduce((a,b)=>a+b,0);
-    const r=baseR*(1+net*0.18);
+    const r=baseR*(1+net*0.2);
     const hovered=(hoverPos===i);
     const dim=(hoverPos>=0&&!hovered)?0.38:1;
     octx.globalAlpha=dim;
@@ -866,10 +863,10 @@ function drawOrbit(){
     octx.beginPath();octx.arc(node.x,node.y,r,0,Math.PI*2);octx.fillStyle=p.color;octx.fill();
     if(hovered){octx.lineWidth=2.5;octx.strokeStyle='#1a1a1a';octx.stroke();}
     octx.fillStyle='#1a1a1a';
-    octx.font=`italic ${Math.round(baseR*1.05)}px "DM Serif Display",serif`;
+    octx.font=`italic ${Math.round(baseR*1.0)}px "DM Serif Display",serif`;
     octx.textAlign='center';octx.textBaseline='alphabetic';
     octx.fillText(p.verb,node.x,node.y-r-10);
-    octx.font=`700 ${Math.round(baseR*0.44)}px "DM Mono",monospace`;
+    octx.font=`700 ${Math.round(baseR*0.42)}px "DM Mono",monospace`;
     octx.fillStyle=net>0?'#3da838':net<0?'#c0472a':'#999';
     octx.textBaseline='top';
     octx.fillText((net>0?'+':'')+net+' net',node.x,node.y+r+8);
